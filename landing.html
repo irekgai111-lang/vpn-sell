@@ -676,6 +676,226 @@
     font-size: 13px;
   }
 
+  /* ─── VPN INFO ─── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 768px) { .info-grid { grid-template-columns: 1fr; } }
+  .info-visual {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 2.2;
+  }
+  .info-row { display: flex; align-items: center; gap: 12px; }
+  .info-arrow { color: var(--blue); font-size: 16px; }
+  .info-from { color: var(--muted); }
+  .info-to   { color: var(--green); font-weight: 500; }
+  .info-points { display: flex; flex-direction: column; gap: 20px; }
+  .info-point { display: flex; gap: 16px; align-items: flex-start; }
+  .info-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .info-text h4 { font-family: var(--font-head); font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .info-text p  { color: var(--muted); font-size: 14px; line-height: 1.7; }
+
+  /* ─── DEVICES ─── */
+  .devices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .device-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.25s;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+  .device-card:hover { border-color: var(--blue); transform: translateY(-4px); box-shadow: var(--glow); }
+  .device-icon { font-size: 40px; margin-bottom: 12px; }
+  .device-name { font-family: var(--font-head); font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+  .device-app  { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .device-btn  {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 6px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    color: var(--blue);
+    transition: all 0.2s;
+  }
+  .device-card:hover .device-btn { background: var(--blue); color: #000; border-color: var(--blue); }
+
+  .guide-banner {
+    background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(0,255,136,0.04) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .guide-banner-text h3 { font-family: var(--font-head); font-weight: 700; font-size: 20px; margin-bottom: 6px; }
+  .guide-banner-text p  { color: var(--muted); font-size: 15px; }
+  .btn-guide {
+    background: var(--green);
+    color: #000;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .btn-guide:hover { background: #fff; transform: translateY(-2px); }
+
+  /* ─── REFERRAL ─── */
+  #referral { background: var(--bg2); }
+  .ref-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 768px) { .ref-wrap { grid-template-columns: 1fr; } }
+  .ref-steps { display: flex; flex-direction: column; gap: 24px; }
+  .ref-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .ref-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+  .ref-step-text h4 { font-family: var(--font-head); font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .ref-step-text p  { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .ref-reward {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ref-reward::before {
+    content: '';
+    position: absolute;
+    top: -50px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+  }
+  .ref-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
+  .ref-days {
+    font-family: var(--font-head);
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .ref-days span { font-size: 28px; }
+  .ref-desc { color: var(--muted); font-size: 16px; margin-bottom: 24px; line-height: 1.6; }
+  .ref-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 10px 16px;
+    line-height: 1.8;
+  }
+
+  /* ─── PRIVACY MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 48px;
+    position: relative;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.3s;
+  }
+  .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { border-color: var(--blue); color: var(--blue); }
+  .modal h3 { font-family: var(--font-head); font-size: 24px; font-weight: 800; margin-bottom: 24px; }
+  .modal h4 { font-family: var(--font-head); font-size: 14px; font-weight: 700; margin: 20px 0 8px; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; }
+  .modal p  { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 8px; }
+
+  /* ─── FOOTER UPDATE ─── */
+  .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .footer-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--blue); }
+
   /* ─── ANIMATIONS ─── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(30px); }
@@ -1175,6 +1395,210 @@
   </div>
 </section>
 
+<!-- VPN INFO -->
+<section id="about-vpn">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Что такое VPN</div>
+      <h2>Зачем он нужен<br>твоим клиентам</h2>
+    </div>
+    <div class="info-grid">
+      <div class="info-points">
+        <div class="info-point">
+          <div class="info-icon">🔐</div>
+          <div class="info-text">
+            <h4>Обход блокировок</h4>
+            <p>Instagram, YouTube без ограничений, зарубежные сервисы, новости — всё открывается как обычно. VPN меняет «адрес» устройства в интернете.</p>
+          </div>
+        </div>
+        <div class="info-point">
+          <div class="info-icon">👁️</div>
+          <div class="info-text">
+            <h4>Анонимность в сети</h4>
+            <p>Провайдер и сайты не видят реальный IP и историю запросов. Трафик шифруется — никто не знает, что ты смотришь.</p>
+          </div>
+        </div>
+        <div class="info-point">
+          <div class="info-icon">🏎️</div>
+          <div class="info-text">
+            <h4>Протокол VLESS Reality</h4>
+            <p>Маскируется под обычный трафик Microsoft.com. Роскомнадзор не может заблокировать без отключения крупных сервисов. Самый устойчивый протокол 2024–2025.</p>
+          </div>
+        </div>
+        <div class="info-point">
+          <div class="info-icon">🌍</div>
+          <div class="info-text">
+            <h4>Работает на всех устройствах</h4>
+            <p>iPhone, Android, Mac, Windows, Linux — одна подписка, до 5 устройств одновременно. Инструкция по установке — в приложении.</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-visual">
+        <div class="info-row">
+          <span class="info-from">твоё устройство</span>
+          <span class="info-arrow">──⚡──▶</span>
+          <span class="info-to">VPN-сервер</span>
+        </div>
+        <div style="color:var(--muted);font-size:11px;margin:4px 0 4px 12px">↓ трафик зашифрован</div>
+        <div class="info-row">
+          <span class="info-from">VPN-сервер</span>
+          <span class="info-arrow">────▶</span>
+          <span class="info-to">любой сайт</span>
+        </div>
+        <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border)">
+          <div style="color:var(--muted);font-size:11px;margin-bottom:12px;letter-spacing:2px">ХАРАКТЕРИСТИКИ</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div><span style="color:var(--green)">●</span> <span style="color:var(--muted)">Протокол</span>  <span style="float:right">VLESS Reality</span></div>
+            <div><span style="color:var(--green)">●</span> <span style="color:var(--muted)">Шифрование</span> <span style="float:right">TLS 1.3</span></div>
+            <div><span style="color:var(--green)">●</span> <span style="color:var(--muted)">Скорость</span>   <span style="float:right">до 1 Гбит/с</span></div>
+            <div><span style="color:var(--green)">●</span> <span style="color:var(--muted)">Uptime</span>     <span style="float:right">99.9%</span></div>
+            <div><span style="color:var(--green)">●</span> <span style="color:var(--muted)">Устройств</span>  <span style="float:right">до 5 штук</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEVICES -->
+<section id="devices" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Установка</div>
+      <h2>Работает на<br>всех устройствах</h2>
+      <p class="section-sub">Одно приложение Hiddify — для всех платформ. Бесплатное.</p>
+    </div>
+    <div class="devices-grid">
+      <a class="device-card" href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777056" target="_blank" rel="noopener">
+        <div class="device-icon">📱</div>
+        <div class="device-name">iPhone / iPad</div>
+        <div class="device-app">Hiddify · iOS 16+</div>
+        <span class="device-btn">App Store →</span>
+      </a>
+      <a class="device-card" href="https://play.google.com/store/apps/details?id=app.hiddify.com" target="_blank" rel="noopener">
+        <div class="device-icon">🤖</div>
+        <div class="device-name">Android</div>
+        <div class="device-app">Hiddify · Android 5+</div>
+        <span class="device-btn">Google Play →</span>
+      </a>
+      <a class="device-card" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">
+        <div class="device-icon">🍎</div>
+        <div class="device-name">Mac</div>
+        <div class="device-app">Hiddify · macOS 12+</div>
+        <span class="device-btn">Скачать →</span>
+      </a>
+      <a class="device-card" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">
+        <div class="device-icon">🪟</div>
+        <div class="device-name">Windows</div>
+        <div class="device-app">Hiddify · Win 10/11</div>
+        <span class="device-btn">Скачать →</span>
+      </a>
+      <a class="device-card" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">
+        <div class="device-icon">🐧</div>
+        <div class="device-name">Linux</div>
+        <div class="device-app">Hiddify · Ubuntu/Debian</div>
+        <span class="device-btn">Скачать →</span>
+      </a>
+    </div>
+    <div class="guide-banner">
+      <div class="guide-banner-text">
+        <h3>Пошаговая инструкция по установке</h3>
+        <p>Скриншоты для каждой платформы — от скачивания до первого подключения. Клиент разберётся за 3 минуты.</p>
+      </div>
+      <a href="#" onclick="openGuide(); return false;" class="btn-guide">Открыть инструкцию →</a>
+    </div>
+  </div>
+</section>
+
+<!-- REFERRAL -->
+<section id="referral">
+  <div class="container">
+    <div class="ref-wrap">
+      <div>
+        <div class="section-label">Реферальная программа</div>
+        <h2>Приведи друга —<br>получи 2 недели</h2>
+        <p class="section-sub" style="margin-bottom:40px">Делись ссылкой — получай бесплатные дни за каждого нового клиента. Автоматически, без заявок.</p>
+        <div class="ref-steps">
+          <div class="ref-step">
+            <div class="ref-num">1</div>
+            <div class="ref-step-text">
+              <h4>Получи реферальную ссылку</h4>
+              <p>Напиши боту /ref — он пришлёт твою личную ссылку-приглашение.</p>
+            </div>
+          </div>
+          <div class="ref-step">
+            <div class="ref-num">2</div>
+            <div class="ref-step-text">
+              <h4>Поделись с друзьями</h4>
+              <p>Отправь ссылку в чат, сторис, или куда удобно. Друг переходит и покупает подписку.</p>
+            </div>
+          </div>
+          <div class="ref-step">
+            <div class="ref-num">3</div>
+            <div class="ref-step-text">
+              <h4>Получаешь бонус автоматически</h4>
+              <p>Бот сразу начисляет +14 дней к твоей подписке. Никаких заявок и ожиданий.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ref-reward">
+        <span class="ref-emoji">🎁</span>
+        <div class="ref-days">14 <span>дней</span></div>
+        <div class="ref-desc">бесплатной подписки<br>за каждого приглашённого друга</div>
+        <div class="ref-note">
+          ✓ Начисляется мгновенно<br>
+          ✓ Без ограничения по количеству<br>
+          ✓ Работает при первой оплате друга<br>
+          ✓ Накапливается — можно копить месяцами
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUIDE MODAL -->
+<div class="modal-overlay" id="guideModal" onclick="if(event.target===this)closeGuide()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeGuide()">×</button>
+    <h3>Инструкция по установке</h3>
+
+    <h4>📱 iPhone / iPad</h4>
+    <p>1. Скачай <b>Hiddify</b> из App Store</p>
+    <p>2. Открой приложение → «Добавить профиль»</p>
+    <p>3. Вставь ссылку-ключ, которую прислал бот</p>
+    <p>4. Нажми «Подключиться» — готово</p>
+
+    <h4>🤖 Android</h4>
+    <p>1. Установи <b>Hiddify</b> из Google Play (или APK с GitHub)</p>
+    <p>2. Главный экран → «+» → «Вставить из буфера»</p>
+    <p>3. Вставь ключ из бота → «Подключиться»</p>
+    <p>4. Разреши VPN-соединение при запросе системы</p>
+
+    <h4>🍎 Mac</h4>
+    <p>1. Скачай <b>Hiddify</b> с GitHub → hiddify-app/releases (файл .dmg)</p>
+    <p>2. Перетащи в «Программы», запусти</p>
+    <p>3. «Добавить профиль» → вставь ключ из бота</p>
+    <p>4. Кнопка «Подключить» в правом углу меню-бара</p>
+
+    <h4>🪟 Windows</h4>
+    <p>1. Скачай <b>Hiddify</b> с GitHub → hiddify-app/releases (файл .exe)</p>
+    <p>2. Установи, запусти</p>
+    <p>3. «Добавить конфиг» → вставь ключ vless://... из бота</p>
+    <p>4. Нажми «Старт» — иконка в трее станет зелёной</p>
+
+    <h4>🐧 Linux</h4>
+    <p>1. Скачай .AppImage с GitHub → hiddify-app/releases</p>
+    <p>2. <code style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-family:var(--font-mono);font-size:12px">chmod +x Hiddify*.AppImage && ./Hiddify*.AppImage</code></p>
+    <p>3. Вставь ключ → подключайся</p>
+
+    <div style="margin-top:28px;padding:16px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
+      <p style="color:var(--blue);font-size:13px;font-weight:600;margin-bottom:4px">Не получается?</p>
+      <p>Напиши в поддержку прямо в боте — команда /help или кнопка «Поддержка» в меню.</p>
+    </div>
+  </div>
+</div>
+
 <!-- CTA -->
 <section class="cta-section" id="contact">
   <div class="container">
@@ -1206,10 +1630,45 @@
   </div>
 </section>
 
+<!-- PRIVACY MODAL -->
+<div class="modal-overlay" id="privacyModal" onclick="if(event.target===this)closePrivacy()">
+  <div class="modal">
+    <button class="modal-close" onclick="closePrivacy()">×</button>
+    <h3>Политика конфиденциальности</h3>
+
+    <h4>Какие данные мы собираем</h4>
+    <p>При регистрации в боте сохраняются: Telegram ID, имя пользователя, дата регистрации. Данные карт и платёжные реквизиты <b>не хранятся</b> — оплата проходит через YooKassa и CryptoBot.</p>
+
+    <h4>Как используются данные</h4>
+    <p>Telegram ID используется исключительно для идентификации вашей подписки, выдачи VPN-ключей и отправки уведомлений о продлении. Мы не передаём данные третьим лицам.</p>
+
+    <h4>VPN-трафик и логи</h4>
+    <p>Мы не ведём логи вашего интернет-трафика, посещённых сайтов или переданных данных. Хранится только статистика потреблённого трафика (сколько GB использовано) для контроля лимита тарифа.</p>
+
+    <h4>Хранение данных</h4>
+    <p>Данные хранятся на сервере, расположенном в Европе (Нидерланды / Германия). Срок хранения — до момента удаления аккаунта или истечения подписки + 30 дней.</p>
+
+    <h4>Удаление данных</h4>
+    <p>Вы можете запросить удаление всех ваших данных, написав в поддержку через бота. Данные удаляются в течение 3 рабочих дней.</p>
+
+    <h4>Контакты</h4>
+    <p>По вопросам конфиденциальности: напиши в бота команду /support или свяжись через Telegram с администратором сервиса.</p>
+
+    <div style="margin-top:24px;font-size:12px;color:var(--muted)">Последнее обновление: июнь 2025</div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
-    <p style="color:var(--muted)">VPN-бот под ключ · Telegram-автоматизация · 2025</p>
+    <div class="footer-links">
+      <span class="footer-link" onclick="openPrivacy()">Политика конфиденциальности</span>
+      <a href="#about-vpn" class="footer-link">Что такое VPN</a>
+      <a href="#devices" class="footer-link">Инструкция по установке</a>
+      <a href="#referral" class="footer-link">Реферальная программа</a>
+      <a href="#contact" class="footer-link">Контакты</a>
+    </div>
+    <p style="color:var(--muted)">VPN-сервис на VLESS Reality · 2025 · Поддержка 24/7 в боте</p>
   </div>
 </footer>
 
@@ -1221,6 +1680,31 @@
     if (!isOpen) item.classList.add('open');
   }
 
+  // Privacy modal
+  function openPrivacy() {
+    document.getElementById('privacyModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePrivacy() {
+    document.getElementById('privacyModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Guide modal
+  function openGuide() {
+    document.getElementById('guideModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeGuide() {
+    document.getElementById('guideModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close modals on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closePrivacy(); closeGuide(); }
+  });
+
   // Scroll animations
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -1231,7 +1715,7 @@
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.feature-card, .pay-card, .rev-card, .flow-step, .faq-item').forEach(el => {
+  document.querySelectorAll('.feature-card, .pay-card, .rev-card, .flow-step, .faq-item, .device-card, .ref-step, .info-point').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
