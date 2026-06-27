@@ -921,6 +921,23 @@ footer p{font-size:12px;color:var(--muted)}
 </footer>
 
 <script>
+// ── НАСТРОЙКИ СЕРВИСА (МЕНЯЙ ЗДЕСЬ) ──────────────────────────────────
+const CFG = {
+  botName:    'YOUR_BOT',            // username бота без @
+  siteName:   'FastVPN',             // название сервиса
+  siteUrl:    'https://irekgai111-lang.github.io/vpn-sell/',
+  supportCmd: '/help',               // команда поддержки в боте
+};
+// ─────────────────────────────────────────────────────────────────────
+
+// Подставляем ссылки на бота везде
+document.querySelectorAll('a[href*="YOUR_BOT"]').forEach(a => {
+  a.href = a.href.replace('YOUR_BOT', CFG.botName);
+});
+document.querySelectorAll('.fl-code').forEach(el => {
+  el.textContent = el.textContent.replace('YOUR_BOT', CFG.botName);
+});
+
 // FAQ accordion
 function faq(btn){
   const item=btn.closest('.fi'),isOpen=item.classList.contains('open');

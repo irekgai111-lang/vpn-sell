@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPN-бизнес — Документ передачи</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f7fa;color:#1a1a2e;line-height:1.6;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+
+/* Шапка */
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;padding:48px 40px;text-align:center}
+.header .logo{font-size:48px;margin-bottom:12px}
+.header h1{font-size:32px;font-weight:800;margin-bottom:8px}
+.header p{font-size:16px;opacity:.75;max-width:480px;margin:0 auto}
+.header .date{display:inline-block;margin-top:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:6px 18px;border-radius:20px;font-size:13px}
+
+/* Контейнер */
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px}
+
+/* Статус-бар */
+.status-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+.stat-box{background:#fff;border-radius:14px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:3px solid #0f3460}
+.stat-box.green{border-top-color:#22c55e}
+.stat-box.blue{border-top-color:#3b82f6}
+.stat-box.purple{border-top-color:#8b5cf6}
+.stat-num{font-size:28px;font-weight:800;color:#1a1a2e}
+.stat-label{font-size:13px;color:#6b7280;margin-top:4px}
+
+/* Разделы */
+.section{background:#fff;border-radius:16px;padding:32px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.s-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #f3f4f6}
+.s-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ic-blue{background:#eff6ff}.ic-green{background:#f0fdf4}.ic-purple{background:#faf5ff}.ic-orange{background:#fff7ed}.ic-red{background:#fef2f2}
+.s-title{font-size:20px;font-weight:700}
+.s-sub{font-size:13px;color:#6b7280;margin-top:2px}
+
+/* Блоки данных */
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.data-item{background:#f9fafb;border-radius:10px;padding:16px}
+.data-label{font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.data-value{font-size:15px;font-weight:600;color:#1a1a2e;word-break:break-all}
+.data-value.mono{font-family:monospace;font-size:13px;background:#e5e7eb;padding:4px 8px;border-radius:6px;display:block;margin-top:4px}
+.copy-note{font-size:11px;color:#9ca3af;margin-top:4px}
+
+/* Командная таблица */
+table{width:100%;border-collapse:collapse}
+table th{background:#f9fafb;padding:10px 14px;text-align:left;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
+table td{padding:12px 14px;border-bottom:1px solid #f3f4f6;font-size:14px;vertical-align:top}
+table tr:last-child td{border-bottom:none}
+table td:first-child{font-family:monospace;font-size:13px;color:#1d4ed8;background:#eff6ff;border-radius:6px;white-space:nowrap}
+.td-desc{color:#374151}
+.td-example{font-size:12px;color:#9ca3af;margin-top:4px;font-family:monospace}
+
+/* Шаги */
+.steps-list{display:grid;gap:12px}
+.step-item{display:flex;gap:16px;align-items:flex-start}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0f3460,#1d4ed8);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;margin-top:2px}
+.step-body h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.step-body p{font-size:13px;color:#6b7280}
+code{background:#f3f4f6;padding:2px 7px;border-radius:5px;font-family:monospace;font-size:12px;color:#1d4ed8}
+
+/* Предупреждение */
+.alert{background:#fef3c7;border-left:4px solid #f59e0b;border-radius:8px;padding:16px;margin:16px 0}
+.alert p{font-size:14px;color:#92400e}
+.alert b{color:#78350f}
+
+/* Тарифы */
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.plan{border:1px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center}
+.plan.hit{border-color:#22c55e;background:#f0fdf4}
+.plan-name{font-size:13px;color:#6b7280;margin-bottom:6px}
+.plan-price{font-size:22px;font-weight:800;color:#1a1a2e}
+.plan-sub{font-size:12px;color:#9ca3af}
+.plan-badge{font-size:11px;background:#22c55e;color:#fff;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:6px}
+
+/* Чеклист */
+.checklist{display:grid;gap:8px}
+.check{display:flex;gap:12px;align-items:center;padding:10px 14px;background:#f9fafb;border-radius:8px;font-size:14px}
+.check .cb{width:20px;height:20px;border-radius:5px;border:2px solid #d1d5db;flex-shrink:0}
+.check.done .cb{background:#22c55e;border-color:#22c55e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px}
+
+/* Контакты */
+.contact-box{background:linear-gradient(135deg,#0f3460,#1d4ed8);border-radius:14px;padding:24px;color:#fff;text-align:center}
+.contact-box h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.contact-box p{font-size:14px;opacity:.8}
+
+/* Подвал */
+.footer{text-align:center;padding:32px;color:#9ca3af;font-size:13px}
+
+/* Печать */
+@media print{
+  body{background:#fff}
+  .section{box-shadow:none;border:1px solid #e5e7eb}
+  .header{background:#1a1a2e !important}
+}
+
+@media(max-width:640px){
+  .status-bar{grid-template-columns:1fr 1fr}
+  .data-grid{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🔐</div>
+  <h1>VPN-бизнес на автопилоте</h1>
+  <p>Документ передачи — всё что нужно для управления и развития</p>
+  <div class="date" id="date-label">Дата передачи: загружается...</div>
+</div>
+
+<div class="wrap">
+
+  <!-- Статус -->
+  <div class="status-bar">
+    <div class="stat-box green">
+      <div class="stat-num">✅</div>
+      <div class="stat-label">Система запущена</div>
+    </div>
+    <div class="stat-box blue">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Способа оплаты</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Автоматизация</div>
+    </div>
+    <div class="stat-box purple">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">Работает без тебя</div>
+    </div>
+  </div>
+
+  <!-- Доступы -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-blue">🔑</div>
+      <div>
+        <div class="s-title">Доступы к системе</div>
+        <div class="s-sub">Сохрани в надёжное место — пароли не восстанавливаются</div>
+      </div>
+    </div>
+    <div class="data-grid">
+      <div class="data-item">
+        <div class="data-label">IP сервера</div>
+        <div class="data-value"><span class="mono" id="server-ip">заполни при передаче</span></div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">Панель Marzban</div>
+        <div class="data-value"><span class="mono" id="panel-url">http://IP:8000/dashboard</span></div>
+        <div class="copy-note">Логин: admin | Пароль: см. ниже</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">Пароль панели Marzban</div>
+        <div class="data-value"><span class="mono" id="marz-pass">из /root/vpn-business-info.txt</span></div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">Telegram-бот</div>
+        <div class="data-value"><span class="mono" id="bot-link">@your_vpn_bot</span></div>
+        <div class="copy-note">Ссылка для клиентов</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">Файл конфигурации</div>
+        <div class="data-value"><span class="mono">/opt/vpn-bot/.env</span></div>
+        <div class="copy-note">Все токены и настройки</div>
+      </div>
+      <div class="data-item">
+        <div class="data-label">База данных</div>
+        <div class="data-value"><span class="mono">/opt/vpn-bot/vpn.db</span></div>
+        <div class="copy-note">Клиенты, платежи, подписки</div>
+      </div>
+    </div>
+    <div class="alert" style="margin-top:16px">
+      <p><b>⚠️ Важно:</b> Все пароли в файле <code>/root/vpn-business-info.txt</code> на сервере. Открыть: подключись по SSH → <code>cat /root/vpn-business-info.txt</code></p>
+    </div>
+  </div>
+
+  <!-- Управление ботом -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-green">⚙️</div>
+      <div>
+        <div class="s-title">Управление ботом</div>
+        <div class="s-sub">Команды прямо в Telegram — быстро и удобно</div>
+      </div>
+    </div>
+    <table>
+      <tr><th>Команда</th><th>Что делает</th></tr>
+      <tr>
+        <td>/stat</td>
+        <td>
+          <div class="td-desc">Статистика: пользователи, активные подписки, выручка за сегодня и всего</div>
+        </td>
+      </tr>
+      <tr>
+        <td>/adddays</td>
+        <td>
+          <div class="td-desc">Добавить дни конкретному клиенту (подарить, исправить ошибку, бонус)</div>
+          <div class="td-example">Пример: /adddays 123456789 30</div>
+        </td>
+      </tr>
+      <tr>
+        <td>/broadcast</td>
+        <td>
+          <div class="td-desc">Рассылка сообщения всем пользователям бота</div>
+          <div class="td-example">Пример: /broadcast 🎉 Акция — месяц за 199₽ только сегодня!</div>
+        </td>
+      </tr>
+      <tr>
+        <td>/promo</td>
+        <td>
+          <div class="td-desc">Создать промокод со скидкой. Параметры: КОД СКИДКА% КОЛ-ВО</div>
+          <div class="td-example">Пример: /promo ЛЕТО30 30 100 &nbsp;→ скидка 30%, 100 использований</div>
+        </td>
+      </tr>
+    </table>
+
+    <div style="margin-top:20px">
+      <div class="s-header" style="border:none;padding:0;margin-bottom:14px">
+        <div style="font-size:15px;font-weight:600">Управление сервером (SSH)</div>
+      </div>
+      <table>
+        <tr><th>Команда</th><th>Что делает</th></tr>
+        <tr><td>systemctl restart vpn-bot</td><td><div class="td-desc">Перезапустить бота</div></td></tr>
+        <tr><td>systemctl stop vpn-bot</td><td><div class="td-desc">Остановить бота</div></td></tr>
+        <tr><td>journalctl -u vpn-bot -f</td><td><div class="td-desc">Смотреть логи в реальном времени</div></td></tr>
+        <tr><td>bash /opt/vpn-project/check.sh</td><td><div class="td-desc">Автопроверка системы</div></td></tr>
+        <tr>
+          <td>nano /opt/vpn-bot/.env</td>
+          <td>
+            <div class="td-desc">Редактировать настройки (токены, ключи)</div>
+            <div class="td-example">После изменений: systemctl restart vpn-bot</div>
+          </td>
+        </tr>
+        <tr>
+          <td>sqlite3 /opt/vpn-bot/vpn.db</td>
+          <td>
+            <div class="td-desc">Прямой доступ к базе данных</div>
+            <div class="td-example">SELECT * FROM users; &nbsp;/&nbsp; .quit для выхода</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Тарифы -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-purple">💰</div>
+      <div>
+        <div class="s-title">Тарифы и цены</div>
+        <div class="s-sub">Изменить цены — файл /opt/vpn-bot/config.py → перезапустить бота</div>
+      </div>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">1 месяц</div>
+        <div class="plan-price">250₽</div>
+        <div class="plan-sub">8,3₽ в день</div>
+      </div>
+      <div class="plan hit">
+        <div class="plan-name">3 месяца</div>
+        <div class="plan-price">599₽</div>
+        <div class="plan-sub">6,7₽ в день</div>
+        <div class="plan-badge">⭐ Хит</div>
+      </div>
+      <div class="plan">
+        <div class="plan-name">6 месяцев</div>
+        <div class="plan-price">999₽</div>
+        <div class="plan-sub">5,5₽ в день</div>
+      </div>
+      <div class="plan">
+        <div class="plan-name">1 год</div>
+        <div class="plan-price">1699₽</div>
+        <div class="plan-sub">4,7₽ в день</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;background:#f9fafb;border-radius:10px;padding:16px">
+      <div style="font-size:13px;color:#374151">
+        <b>Способы оплаты:</b> ⭐ Telegram Stars (встроенный) &nbsp;|&nbsp; 💳 Карта / СБП через YooKassa &nbsp;|&nbsp; 🪙 USDT через CryptoBot<br>
+        <b>Пробный период:</b> 3 дня бесплатно — 1 раз на аккаунт<br>
+        <b>Рефералы:</b> +7 дней клиенту за каждого приглашённого друга
+      </div>
+    </div>
+  </div>
+
+  <!-- Как добавить клиентов вручную -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-orange">👤</div>
+      <div>
+        <div class="s-title">Частые задачи</div>
+        <div class="s-sub">Что делать в стандартных ситуациях</div>
+      </div>
+    </div>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Клиент оплатил, но не получил ключ</h4>
+          <p>Проверь логи: <code>journalctl -u vpn-bot -n 50</code>. Если ошибка Marzban — создай пользователя вручную в панели и отправь ключ. Или добавь дни: <code>/adddays ID_клиента 30</code></p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Клиент не может подключиться</h4>
+          <p>Попроси его установить Hiddify заново. Убедись что порт 443 открыт: <code>ufw status</code>. Проверь что Marzban работает: <code>docker ps</code> или <code>systemctl status marzban</code></p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Нужно дать скидку или подарить VPN</h4>
+          <p>Создай промокод: <code>/promo ПОДАРОК100 100 1</code> — 100% скидка, 1 использование. Или добавь дни напрямую: <code>/adddays ID 30</code></p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Сервер перестал отвечать</h4>
+          <p>Зайди в Hetzner Cloud Console → перезагрузи сервер кнопкой Reboot. Бот и Marzban поднимутся автоматически (настроен @reboot).</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Слишком много клиентов — сервер тормозит</h4>
+          <p>Купи второй VPS (Hetzner CAX11, 380₽/мес) → установи Marzban → добавь второй inbound в конфиг бота. Один сервер держит 80–150 активных пользователей.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Инструкция для клиентов -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-blue">📱</div>
+      <div>
+        <div class="s-title">Инструкция для клиентов</div>
+        <div class="s-sub">Можно скопировать и отправить клиенту</div>
+      </div>
+    </div>
+    <div style="background:#f9fafb;border-radius:12px;padding:20px;font-size:14px;line-height:1.8;border-left:4px solid #3b82f6">
+      <b>Как подключить VPN:</b><br><br>
+      1. Скачай приложение <b>Hiddify</b>:<br>
+      &nbsp;&nbsp;&nbsp;• iPhone / Mac → App Store: Hiddify<br>
+      &nbsp;&nbsp;&nbsp;• Android → Google Play: Hiddify<br>
+      &nbsp;&nbsp;&nbsp;• Windows → hiddify.com → Download<br><br>
+      2. Открой Hiddify → нажми <b>+</b> → «Добавить по ссылке»<br>
+      3. Вставь свой VPN-ключ из бота (раздел «Моя подписка»)<br>
+      4. Нажми тумблер — VPN включён!<br><br>
+      🟢 Протокол VLESS Reality — не блокируется в России.<br>
+      Если что-то не работает — напиши в бот, раздел «Поддержка».
+    </div>
+  </div>
+
+  <!-- Финансовый план -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-green">📊</div>
+      <div>
+        <div class="s-title">Что ожидать по деньгам</div>
+        <div class="s-sub">Реалистичный план без приукрашиваний</div>
+      </div>
+    </div>
+    <table>
+      <tr><th>Период</th><th>Клиентов</th><th>Выручка/мес</th><th>Расходы/мес</th><th>Чистыми</th></tr>
+      <tr>
+        <td>Месяц 1–2</td>
+        <td>10–20</td>
+        <td>2 000–4 500₽</td>
+        <td>~500₽</td>
+        <td style="color:#16a34a;font-weight:700">~2 000–4 000₽</td>
+      </tr>
+      <tr>
+        <td>Месяц 3–5</td>
+        <td>50–80</td>
+        <td>11 000–18 000₽</td>
+        <td>~1 200₽</td>
+        <td style="color:#16a34a;font-weight:700">~10 000–17 000₽</td>
+      </tr>
+      <tr>
+        <td>Месяц 6+</td>
+        <td>150–200</td>
+        <td>33 000–45 000₽</td>
+        <td>~3 500₽</td>
+        <td style="color:#16a34a;font-weight:700">~30 000–42 000₽</td>
+      </tr>
+    </table>
+    <div style="margin-top:14px;font-size:13px;color:#6b7280;padding:12px;background:#f9fafb;border-radius:8px">
+      💡 Главное — рефералы и Telegram-группы. Каждый клиент в среднем приводит 0.5–1 нового. При активном продвижении в группах — 20–30 новых клиентов в месяц без платной рекламы.
+    </div>
+  </div>
+
+  <!-- Чеклист передачи -->
+  <div class="section">
+    <div class="s-header">
+      <div class="s-icon ic-red">☑️</div>
+      <div>
+        <div class="s-title">Чеклист передачи</div>
+        <div class="s-sub">Отметь всё перед подписанием акта</div>
+      </div>
+    </div>
+    <div class="checklist">
+      <div class="check done"><div class="cb">✓</div><span>VPS сервер оплачен и работает 24/7</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Marzban VPN-панель установлена и доступна</span></div>
+      <div class="check done"><div class="cb">✓</div><span>VLESS Reality inbound настроен (порт 443)</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Telegram-бот запущен и отвечает на /start</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Пробный период выдаёт рабочий VPN-ключ</span></div>
+      <div class="check done"><div class="cb">✓</div><span>VPN-ключ проверен в Hiddify — интернет работает</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Способы оплаты подключены (Stars / YooKassa / Crypto)</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Тестовая покупка прошла, ключ пришёл автоматически</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Напоминания настроены (за 3д / 1д / в день X)</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Watchdog работает — бот поднимается автоматически</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Admin-команды /stat /adddays /broadcast /promo работают</span></div>
+      <div class="check done"><div class="cb">✓</div><span>Доступы переданы клиенту (этот документ)</span></div>
+    </div>
+  </div>
+
+  <!-- Контакт -->
+  <div class="contact-box">
+    <h3>🛠 Техническая поддержка</h3>
+    <p style="margin-top:8px">Если что-то не работает — сначала запусти проверку:<br>
+    <code style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:6px;display:inline-block;margin-top:8px">bash /opt/vpn-project/check.sh</code><br><br>
+    Опиши результат — быстро разберёмся.</p>
+  </div>
+
+</div><!-- /wrap -->
+
+<div class="footer">
+  Документ сформирован автоматически · VPN Business System · <span id="year"></span>
+</div>
+
+<script>
+  const now = new Date();
+  document.getElementById('date-label').textContent =
+    'Дата передачи: ' + now.toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('year').textContent = now.getFullYear();
+</script>
+</body>
+</html>
