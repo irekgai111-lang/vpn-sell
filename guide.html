@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPN на продажу — гид для начинающих</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.6; }
+
+  .hero { background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 50%, #1a1f2e 100%); padding: 60px 20px 40px; text-align: center; border-bottom: 1px solid #21262d; }
+  .hero-badge { display: inline-block; background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); padding: 6px 16px; border-radius: 20px; font-size: 13px; margin-bottom: 20px; }
+  .hero h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, #58a6ff, #79c0ff, #a5f3fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 18px; color: #8b949e; max-width: 560px; margin: 0 auto; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+  /* Метрики вверху */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 48px; }
+  .metric-card { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 20px; text-align: center; }
+  .metric-num { font-size: 28px; font-weight: 800; color: #58a6ff; }
+  .metric-label { font-size: 13px; color: #8b949e; margin-top: 4px; }
+
+  /* Раздел */
+  .section { margin-bottom: 48px; }
+  .section-title { font-size: 22px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+  .section-title .icon { font-size: 20px; }
+
+  /* Карточки топ-3 */
+  .top3 { display: grid; gap: 20px; }
+  .vpn-card { background: #161b22; border: 1px solid #21262d; border-radius: 16px; padding: 28px; position: relative; transition: border-color 0.2s; }
+  .vpn-card.winner { border-color: #2ea043; background: linear-gradient(135deg, #161b22 0%, #0d2d1a 100%); }
+  .vpn-card:hover { border-color: #30363d; }
+  .card-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+  .card-rank { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; flex-shrink: 0; }
+  .rank-1 { background: linear-gradient(135deg, #2ea043, #1a7f37); }
+  .rank-2 { background: linear-gradient(135deg, #58a6ff, #1f6feb); }
+  .rank-3 { background: linear-gradient(135deg, #8b949e, #484f58); }
+  .card-name { font-size: 20px; font-weight: 700; }
+  .card-sub { color: #8b949e; font-size: 14px; margin-top: 2px; }
+  .winner-badge { position: absolute; top: 16px; right: 16px; background: #2ea043; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .pros, .cons { }
+  .pros-title { font-size: 13px; font-weight: 600; color: #3fb950; margin-bottom: 8px; }
+  .cons-title { font-size: 13px; font-weight: 600; color: #f85149; margin-bottom: 8px; }
+  .pros li, .cons li { font-size: 14px; color: #c9d1d9; list-style: none; padding: 3px 0; }
+  .pros li::before { content: "✓ "; color: #3fb950; }
+  .cons li::before { content: "✗ "; color: #f85149; }
+
+  .card-score { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+  .score-item { background: #21262d; border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+  .score-item span { color: #58a6ff; font-weight: 700; }
+
+  /* Шаги */
+  .steps { display: grid; gap: 16px; }
+  .step { display: flex; gap: 20px; background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 20px; }
+  .step-num { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #58a6ff, #1f6feb); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+  .step-content h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .step-content p { font-size: 14px; color: #8b949e; }
+  .step-content code { background: #21262d; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; color: #79c0ff; display: inline-block; margin-top: 6px; }
+  .step-tag { display: inline-block; background: rgba(88,166,255,0.15); color: #58a6ff; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+  .step-tag.green { background: rgba(63,185,80,0.15); color: #3fb950; }
+  .step-tag.orange { background: rgba(210,153,34,0.15); color: #d29922; }
+
+  /* Экономика */
+  .economy { background: #161b22; border: 1px solid #21262d; border-radius: 16px; padding: 28px; }
+  .economy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .economy-col h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #8b949e; }
+  .economy-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #21262d; font-size: 14px; }
+  .economy-row:last-child { border-bottom: none; }
+  .economy-row .val { color: #58a6ff; font-weight: 600; }
+  .economy-row .val.red { color: #f85149; }
+  .economy-row .val.green { color: #3fb950; }
+  .economy-total { margin-top: 20px; background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); border-radius: 12px; padding: 16px; text-align: center; }
+  .economy-total .num { font-size: 32px; font-weight: 800; color: #3fb950; }
+  .economy-total .label { font-size: 14px; color: #8b949e; }
+
+  /* Архитектура */
+  .arch { background: #161b22; border: 1px solid #21262d; border-radius: 16px; padding: 28px; }
+  .arch-flow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .arch-box { background: #21262d; border-radius: 12px; padding: 14px 20px; text-align: center; flex: 1; min-width: 120px; }
+  .arch-box .emoji { font-size: 24px; margin-bottom: 6px; }
+  .arch-box .name { font-size: 13px; font-weight: 600; }
+  .arch-box .tech { font-size: 12px; color: #8b949e; margin-top: 2px; }
+  .arch-arrow { color: #58a6ff; font-size: 20px; flex-shrink: 0; }
+
+  /* Команды */
+  .cmd-block { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 20px; font-family: monospace; font-size: 14px; margin-top: 16px; }
+  .cmd-block .comment { color: #8b949e; }
+  .cmd-block .cmd { color: #79c0ff; }
+  .cmd-block .out { color: #3fb950; font-size: 13px; }
+
+  /* Тарифы */
+  .tariffs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .tariff { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 20px; text-align: center; }
+  .tariff.best { border-color: #2ea043; }
+  .tariff-name { font-size: 14px; color: #8b949e; }
+  .tariff-price { font-size: 28px; font-weight: 800; color: #e6edf3; margin: 8px 0; }
+  .tariff-price span { font-size: 16px; color: #8b949e; }
+  .tariff-per { font-size: 13px; color: #58a6ff; }
+  .best-label { font-size: 11px; background: #2ea043; color: #fff; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 8px; }
+
+  /* FAQ */
+  .faq { display: grid; gap: 12px; }
+  .faq-item { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 20px; }
+  .faq-q { font-weight: 600; margin-bottom: 8px; display: flex; gap: 10px; }
+  .faq-q .q { color: #58a6ff; }
+  .faq-a { font-size: 14px; color: #8b949e; padding-left: 26px; }
+
+  /* Итог */
+  .cta { background: linear-gradient(135deg, #0d2d1a, #161b22); border: 1px solid #2ea043; border-radius: 16px; padding: 32px; text-align: center; margin-top: 48px; }
+  .cta h2 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+  .cta p { color: #8b949e; max-width: 500px; margin: 0 auto; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 28px; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .pros-cons { grid-template-columns: 1fr; }
+    .economy-grid { grid-template-columns: 1fr; }
+    .tariffs { grid-template-columns: repeat(2, 1fr); }
+    .arch-flow { flex-direction: column; }
+    .arch-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🔐 VPN как бизнес — полный гид</div>
+  <h1>Продавай VPN с нуля</h1>
+  <p>Топ-3 модели, выбор лучшей, пошаговая установка и экономика бизнеса</p>
+</div>
+
+<div class="container">
+
+  <!-- Метрики -->
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-num">~800₽</div>
+      <div class="metric-label">Стоимость сервера в месяц</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">50–500</div>
+      <div class="metric-label">Пользователей на 1 сервере</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">149₽</div>
+      <div class="metric-label">Цена за VPN клиенту</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-num">до 50 000₽</div>
+      <div class="metric-label">Выручка в месяц (100 клиентов)</div>
+    </div>
+  </div>
+
+  <!-- Топ-3 -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🏆</span>
+      Топ-3 модели для продажи VPN
+    </div>
+    <div class="top3">
+
+      <!-- #1 Marzban -->
+      <div class="vpn-card winner">
+        <div class="winner-badge">⭐ Выбор</div>
+        <div class="card-header">
+          <div class="card-rank rank-1">1</div>
+          <div>
+            <div class="card-name">Marzban</div>
+            <div class="card-sub">Панель + встроенный Telegram-бот + автоматизация продаж</div>
+          </div>
+        </div>
+        <p style="font-size:14px;color:#c9d1d9;margin-bottom:12px;">
+          Полноценная система управления VPN-пользователями с веб-панелью и встроенным ботом. Клиент сам заходит в бота → платит → получает ключ автоматически. Протокол VLESS Reality — не блокируется.
+        </p>
+        <div class="pros-cons">
+          <div class="pros">
+            <div class="pros-title">✅ Плюсы</div>
+            <ul>
+              <li>Встроенный бот для клиентов</li>
+              <li>Автовыдача ключей после оплаты</li>
+              <li>Подписочные ссылки (auto-update)</li>
+              <li>Статистика и контроль трафика</li>
+              <li>Поддержка VLESS, VMess, Trojan</li>
+              <li>Бесплатный open source</li>
+              <li>Простая установка через Docker</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <div class="cons-title">❌ Минусы</div>
+            <ul>
+              <li>Оплата не встроена (нужен CryptoBot)</li>
+              <li>Нужен VPS сервер</li>
+              <li>Базовый технический минимум</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-score">
+          <div class="score-item">Автоматизация: <span>9/10</span></div>
+          <div class="score-item">Простота: <span>7/10</span></div>
+          <div class="score-item">Заработок: <span>9/10</span></div>
+          <div class="score-item">Риски: <span>низкие</span></div>
+        </div>
+      </div>
+
+      <!-- #2 3X-UI -->
+      <div class="vpn-card">
+        <div class="card-header">
+          <div class="card-rank rank-2">2</div>
+          <div>
+            <div class="card-name">3X-UI</div>
+            <div class="card-sub">Самая популярная панель, требует отдельного бота</div>
+          </div>
+        </div>
+        <p style="font-size:14px;color:#c9d1d9;margin-bottom:12px;">
+          Мощная панель управления Xray. Очень популярна в России. Нет встроенного бота — нужно подключать дополнительные решения (например «marzban-shop» или самописный бот).
+        </p>
+        <div class="pros-cons">
+          <div class="pros">
+            <div class="pros-title">✅ Плюсы</div>
+            <ul>
+              <li>Максимум настроек и протоколов</li>
+              <li>Огромное сообщество</li>
+              <li>Subscription URL для клиентов</li>
+              <li>Хорошая документация (RU)</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <div class="cons-title">❌ Минусы</div>
+            <ul>
+              <li>Бот — отдельная установка</li>
+              <li>Сложнее автоматизировать оплату</li>
+              <li>Больше ручной работы на старте</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-score">
+          <div class="score-item">Автоматизация: <span>6/10</span></div>
+          <div class="score-item">Простота: <span>5/10</span></div>
+          <div class="score-item">Заработок: <span>9/10</span></div>
+          <div class="score-item">Риски: <span>низкие</span></div>
+        </div>
+      </div>
+
+      <!-- #3 Партнёрки -->
+      <div class="vpn-card">
+        <div class="card-header">
+          <div class="card-rank rank-3">3</div>
+          <div>
+            <div class="card-name">Партнёрские программы</div>
+            <div class="card-sub">NordVPN, AstroVPN — без своего сервера</div>
+          </div>
+        </div>
+        <p style="font-size:14px;color:#c9d1d9;margin-bottom:12px;">
+          Продаёшь чужие VPN-подписки как партнёр. Зарабатываешь комиссию 20–40% с каждой продажи. Никаких серверов не нужно — только ссылки для клиентов.
+        </p>
+        <div class="pros-cons">
+          <div class="pros">
+            <div class="pros-title">✅ Плюсы</div>
+            <ul>
+              <li>Не нужен сервер</li>
+              <li>Ноль технических знаний</li>
+              <li>Пассивный доход с реферала</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <div class="cons-title">❌ Минусы</div>
+            <ul>
+              <li>Маленький заработок (~150₽ с клиента)</li>
+              <li>Оплата в долларах / USD</li>
+              <li>Нет контроля над продуктом</li>
+              <li>Клиент уходит к ним, не к тебе</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card-score">
+          <div class="score-item">Автоматизация: <span>4/10</span></div>
+          <div class="score-item">Простота: <span>10/10</span></div>
+          <div class="score-item">Заработок: <span>4/10</span></div>
+          <div class="score-item">Риски: <span>минимальные</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Вывод -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🎯</span>
+      Вывод: лучшая модель для автоматизации
+    </div>
+    <div class="arch">
+      <p style="font-size:16px;margin-bottom:20px;">
+        <b style="color:#3fb950">Marzban + CryptoBot = полностью автоматизированный VPN-бизнес</b>
+      </p>
+      <p style="font-size:14px;color:#8b949e;margin-bottom:24px;">
+        Клиент заходит в Telegram-бот → выбирает тариф → платит через CryptoBot (USDT/BTC/TON) →
+        получает VPN-ключ автоматически через 30 секунд. Ты в это время ничего не делаешь.
+      </p>
+      <div class="arch-flow">
+        <div class="arch-box">
+          <div class="emoji">👤</div>
+          <div class="name">Клиент</div>
+          <div class="tech">Telegram</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">
+          <div class="emoji">🤖</div>
+          <div class="name">Твой бот</div>
+          <div class="tech">Telegram Bot</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">
+          <div class="emoji">💳</div>
+          <div class="name">Оплата</div>
+          <div class="tech">@CryptoBot / ЮMoney</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">
+          <div class="emoji">⚙️</div>
+          <div class="name">Marzban API</div>
+          <div class="tech">Создаёт ключ</div>
+        </div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">
+          <div class="emoji">🔑</div>
+          <div class="name">VPN-ключ</div>
+          <div class="tech">Клиент получает</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Тарифы -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">💰</span>
+      Рекомендуемые тарифы
+    </div>
+    <div class="tariffs">
+      <div class="tariff">
+        <div class="tariff-name">1 месяц</div>
+        <div class="tariff-price">149<span>₽</span></div>
+        <div class="tariff-per">4,97₽ в день</div>
+      </div>
+      <div class="tariff best">
+        <div class="tariff-name">3 месяца</div>
+        <div class="tariff-price">399<span>₽</span></div>
+        <div class="tariff-per">4,43₽ в день</div>
+        <div class="best-label">Хит продаж</div>
+      </div>
+      <div class="tariff">
+        <div class="tariff-name">6 месяцев</div>
+        <div class="tariff-price">699<span>₽</span></div>
+        <div class="tariff-per">3,88₽ в день</div>
+      </div>
+      <div class="tariff">
+        <div class="tariff-name">1 год</div>
+        <div class="tariff-price">1199<span>₽</span></div>
+        <div class="tariff-per">3,28₽ в день</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Экономика -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">📊</span>
+      Экономика бизнеса (100 клиентов)
+    </div>
+    <div class="economy">
+      <div class="economy-grid">
+        <div>
+          <h3>💸 Расходы в месяц</h3>
+          <div class="economy-row"><span>VPS Hetzner (CAX11)</span><span class="val red">−380₽</span></div>
+          <div class="economy-row"><span>Резервный VPS</span><span class="val red">−380₽</span></div>
+          <div class="economy-row"><span>Домен (в год / 12)</span><span class="val red">−100₽</span></div>
+          <div class="economy-row"><span>Комиссия CryptoBot</span><span class="val red">−500₽</span></div>
+          <div class="economy-row"><b>Итого расходы</b><span class="val red">−1 360₽</span></div>
+        </div>
+        <div>
+          <h3>💚 Доходы в месяц (100 клиентов)</h3>
+          <div class="economy-row"><span>50 чел × 149₽ (1 мес)</span><span class="val">7 450₽</span></div>
+          <div class="economy-row"><span>30 чел × 399₽/3 = 133₽/мес</span><span class="val">3 990₽</span></div>
+          <div class="economy-row"><span>20 чел × 1199₽/12 = 100₽/мес</span><span class="val">2 000₽</span></div>
+          <div class="economy-row"><b>Итого доходы</b><span class="val green">13 440₽</span></div>
+        </div>
+      </div>
+      <div class="economy-total">
+        <div class="num">~12 000₽ / мес</div>
+        <div class="label">чистая прибыль со 100 клиентов — один сервер</div>
+      </div>
+      <p style="font-size:13px;color:#8b949e;margin-top:16px;text-align:center;">
+        На одном сервере можно держать 200–500 клиентов. С 300 клиентами — до 35 000₽/мес. Всё на автопилоте.
+      </p>
+    </div>
+  </div>
+
+  <!-- Пошаговая установка -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🛠️</span>
+      Установка — как для пятиклассника
+    </div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-tag">Деньги</div>
+          <h3>Купи сервер (VPS)</h3>
+          <p>Заходи на <b>hetzner.com</b> → Cloud → Add Server → Location: Ashburn USA → OS: Ubuntu 22.04 → Type: CAX11 (ARM, €3.29/мес) → SSH Key или пароль → Create. Запиши IP адрес сервера (например 5.42.123.45).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-tag">Подключение</div>
+          <h3>Подключись к серверу</h3>
+          <p>Windows: скачай <b>MobaXterm</b> → Session → SSH → вставь IP → Enter. Mac: открой Терминал и напиши: <code>ssh root@ТУТ_IP</code> → Enter → вводи пароль.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-tag green">Автоустановка</div>
+          <h3>Установи Marzban (одна команда)</h3>
+          <p>Скопируй и вставь в терминал — нажми Enter и жди 5 минут:</p>
+          <code>sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban.sh)" @ install</code>
+          <p style="margin-top:8px;">Скрипт сам установит всё. В конце спросит логин/пароль администратора — придумай и запиши!</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-tag">Настройка</div>
+          <h3>Открой панель управления</h3>
+          <p>В браузере открой: <code>http://ТУТ_IP:8000/dashboard</code></p>
+          <p style="margin-top:6px;">Войди с логином/паролем который задал при установке. Ты увидишь панель управления пользователями.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-tag">Протокол</div>
+          <h3>Добавь VPN-протокол (VLESS Reality)</h3>
+          <p>В панели: <b>Hosts</b> → <b>Add Inbound</b> → выбери VLESS → выбери Reality → укажи порт 443 → сохрани. Reality — самый надёжный протокол, не блокируется в России.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-tag green">Telegram</div>
+          <h3>Создай Telegram-бота для клиентов</h3>
+          <p>В Telegram найди <b>@BotFather</b> → /newbot → придумай имя (например "Мой VPN") → придумай логин (например "myvpn2024_bot") → скопируй токен. Запиши токен — он выглядит как "7234567890:AAHxxxx..."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <div class="step-tag green">Связка</div>
+          <h3>Подключи бота к Marzban</h3>
+          <p>В терминале сервера:
+          <code>marzban cli set-setting --telegram-api-token "ТУТ_ТОКЕН"</code>
+          </p>
+          <p style="margin-top:6px;">Потом: <code>marzban cli start-bot</code></p>
+          <p style="margin-top:6px;">Всё — бот запустился! Клиенты могут зарегистрироваться и получить ключ через бота.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-content">
+          <div class="step-tag orange">Оплата</div>
+          <h3>Подключи оплату через @CryptoBot</h3>
+          <p>В Telegram найди <b>@CryptoBot</b> → Pay → Create App → получи API-токен. Поддерживает: USDT, TON, BTC, ETH. Деньги приходят тебе на крипто-кошелёк моментально. Комиссия 1%.</p>
+          <p style="margin-top:6px;">Для рублёвой оплаты — <b>YooKassa</b> (yookassa.ru) или <b>Robokassa</b>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">9</div>
+        <div class="step-content">
+          <div class="step-tag orange">Бот продаж</div>
+          <h3>Установи бота-продавца (скрипт готов)</h3>
+          <p>Скопируй файл <b>bot/bot.py</b> из этого проекта на сервер. Настрой .env с токенами. Запусти. Бот будет сам принимать деньги → создавать ключи → отправлять клиентам.</p>
+          <code>pip install python-telegram-bot requests && python3 bot.py</code>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">10</div>
+        <div class="step-content">
+          <div class="step-tag green">Запуск</div>
+          <h3>Запусти продажи</h3>
+          <p>Поделись ссылкой на бота в соцсетях, ВКонтакте, Telegram-группах. Рекомендуй друзьям. Можно настроить рекламу в Telegram. Первые 10 клиентов — поделись бесплатно, получи отзывы.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">❓</span>
+      Часто задаваемые вопросы
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q"><span class="q">Q</span>Это законно — продавать VPN в России?</div>
+        <div class="faq-a">Да. Продажа VPN-сервисов частным лицам не запрещена. Запрещено только обходить блокировки самостоятельно на корпоративном уровне. Миллионы людей пользуются VPN — это нормально.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><span class="q">Q</span>Сколько нужно вложить на старте?</div>
+        <div class="faq-a">Минимум — ~500₽ на первый месяц VPS. Больше ничего платить не нужно. Marzban бесплатный, Python бесплатный, Telegram-бот бесплатный.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><span class="q">Q</span>Что если сервер упадёт?</div>
+        <div class="faq-a">Marzban включает встроенный watchdog. Плюс Hetzner даёт 99.9% uptime. При желании можно добавить второй сервер как резервный — клиенты автоматически переключатся.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><span class="q">Q</span>Нужны технические знания?</div>
+        <div class="faq-a">Базовые — да. Скопировать команду в терминал, зайти на сайт, создать бота в @BotFather. Это уровень "пятиклассника". Если что-то пойдёт не так — ошибка видна в терминале, гугл + ChatGPT решают 90% проблем.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><span class="q">Q</span>Могу ли я принимать рубли?</div>
+        <div class="faq-a">Да. Через YooKassa, Robokassa, или просто по переводу на Сбербанк (но вручную). CryptoBot — самый удобный вариант (USDT стабильная монета, легко меняется на рубли через P2P).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>🚀 Готов запустить?</h2>
+    <p>Весь код для установки сервера и бота-продавца — в файлах <b>install-marzban.sh</b> и <b>bot/bot.py</b> этого проекта. Запусти скрипт на сервере — и через 10 минут у тебя работающий VPN-бизнес.</p>
+  </div>
+
+</div>
+</body>
+</html>
