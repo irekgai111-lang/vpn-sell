@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPN-бизнес под ключ — Telegram-бот + автоматизация</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06080f;
+    --bg2: #0c1018;
+    --bg3: #111520;
+    --blue: #00d4ff;
+    --blue2: #0099cc;
+    --green: #00ff88;
+    --red: #ff4466;
+    --text: #e8edf5;
+    --muted: #7a8499;
+    --border: rgba(0,212,255,0.12);
+    --glow: 0 0 40px rgba(0,212,255,0.15);
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── GRID NOISE BACKGROUND ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 0;
+    background: rgba(6,8,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    color: var(--blue);
+  }
+  .logo span { color: var(--text); }
+  .nav-cta {
+    background: var(--blue);
+    color: #000;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 9px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .nav-cta:hover { background: #fff; transform: translateY(-1px); }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 160px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -100px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue);
+    margin-bottom: 32px;
+  }
+  .badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--blue);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.5); }
+  }
+
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+    position: relative;
+  }
+  h1 em::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), transparent);
+    border-radius: 2px;
+  }
+
+  .hero-sub {
+    font-size: 20px;
+    color: var(--muted);
+    max-width: 540px;
+    margin-bottom: 48px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+  .hero-sub b { color: var(--text); font-weight: 500; }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 72px;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: #000;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 16px;
+    padding: 16px 36px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.25s;
+    box-shadow: 0 0 30px rgba(0,212,255,0.3);
+  }
+  .btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,212,255,0.5); }
+  .btn-secondary {
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-weight: 500;
+    font-size: 16px;
+    padding: 16px 36px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.25s;
+    background: rgba(255,255,255,0.03);
+  }
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: -1px;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ─── SECTION HEADERS ─── */
+  section { padding: 100px 0; }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--blue);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-family: var(--font-head);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 500px;
+    font-weight: 300;
+  }
+  .section-head { margin-bottom: 56px; }
+
+  /* ─── WHAT YOU GET ─── */
+  #features { background: var(--bg2); }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .feature-card {
+    background: var(--bg2);
+    padding: 36px 32px;
+    transition: background 0.2s;
+  }
+  .feature-card:hover { background: var(--bg3); }
+  .feat-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+  .feat-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+  .feat-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ─── HOW IT WORKS ─── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 23px; top: 24px; bottom: 24px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--blue), transparent);
+  }
+  .flow-step {
+    display: flex;
+    gap: 28px;
+    padding: 28px 0;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--blue);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .step-content { padding-top: 10px; }
+  .step-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .step-desc {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .step-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    color: var(--blue);
+    display: inline-block;
+  }
+
+  /* ─── PAYMENTS ─── */
+  #payments { background: var(--bg2); }
+  .pay-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .pay-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: all 0.25s;
+  }
+  .pay-card:hover { border-color: var(--blue); box-shadow: var(--glow); transform: translateY(-4px); }
+  .pay-logo {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  .pay-name {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  .pay-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .pay-tag {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.2);
+    color: var(--green);
+  }
+
+  /* ─── FINANCE ─── */
+  .finance-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  @media (max-width: 768px) { .finance-wrap { grid-template-columns: 1fr; } }
+
+  .costs-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+  }
+  .costs-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 24px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+  }
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 15px;
+  }
+  .cost-row:last-child { border-bottom: none; }
+  .cost-label { color: var(--muted); }
+  .cost-val { font-family: var(--font-mono); font-weight: 500; }
+  .cost-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .revenue-cards { display: flex; flex-direction: column; gap: 16px; }
+  .rev-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+  }
+  .rev-card.hot {
+    border-color: var(--blue);
+    background: rgba(0,212,255,0.04);
+    box-shadow: var(--glow);
+  }
+  .rev-card:hover { transform: translateX(4px); }
+  .rev-left { }
+  .rev-clients { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .rev-title { font-family: var(--font-head); font-weight: 700; font-size: 15px; }
+  .rev-right { text-align: right; }
+  .rev-profit {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--green);
+    letter-spacing: -0.5px;
+  }
+  .rev-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .hot-badge {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--blue);
+    margin-left: 8px;
+  }
+
+  /* ─── COMPARISON ─── */
+  #compare { background: var(--bg2); }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .compare-table th {
+    background: var(--bg3);
+    padding: 18px 20px;
+    text-align: left;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-table th:first-child { color: var(--muted); font-weight: 500; }
+  .compare-table th.ours { color: var(--blue); }
+  .compare-table td {
+    padding: 14px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: var(--muted);
+  }
+  .compare-table td:first-child { color: var(--text); font-weight: 500; font-size: 13px; }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .yes { color: var(--green); font-weight: 600; }
+  .no { color: var(--red); font-weight: 600; }
+  .part { color: #ffaa00; font-weight: 600; }
+  td.ours { background: rgba(0,212,255,0.04); color: var(--text) !important; font-weight: 500 !important; }
+
+  /* ─── PRICING ─── */
+  .price-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 780px;
+  }
+  @media (max-width: 640px) { .price-wrap { grid-template-columns: 1fr; } }
+  .price-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    position: relative;
+    transition: all 0.25s;
+  }
+  .price-card.main {
+    border-color: var(--blue);
+    background: rgba(0,212,255,0.04);
+    box-shadow: var(--glow);
+  }
+  .price-card:hover { transform: translateY(-4px); }
+  .price-badge {
+    position: absolute;
+    top: -12px; right: 24px;
+    background: var(--blue);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+  }
+  .price-name {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .price-amount {
+    font-family: var(--font-head);
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .price-amount span { font-size: 22px; font-weight: 600; vertical-align: super; }
+  .price-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .price-features li {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .price-features li::before {
+    content: '✓';
+    width: 18px;
+    height: 18px;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* ─── FAQ ─── */
+  .faq-list { display: flex; flex-direction: column; gap: 2px; }
+  .faq-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .faq-item:hover { border-color: rgba(0,212,255,0.25); }
+  .faq-q {
+    width: 100%;
+    padding: 22px 28px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .faq-arrow {
+    color: var(--blue);
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+  .faq-item.open .faq-arrow { transform: rotate(45deg); }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .faq-item.open .faq-a { max-height: 300px; }
+  .faq-a-inner {
+    padding: 0 28px 22px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ─── CTA FINAL ─── */
+  .cta-section {
+    text-align: center;
+    background: var(--bg2);
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section h2 { font-size: clamp(32px, 5vw, 56px); margin-bottom: 20px; }
+  .cta-section p { color: var(--muted); font-size: 18px; margin-bottom: 48px; font-weight: 300; }
+  .cta-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .contact-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 12px 24px;
+    font-size: 15px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .contact-pill:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    section { padding: 72px 0; }
+    .hero { padding: 120px 0 72px; }
+    .hero-stats { gap: 24px; }
+    .finance-wrap { grid-template-columns: 1fr; }
+    .compare-table { font-size: 13px; }
+    .compare-table th, .compare-table td { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="inner">
+    <div class="logo">VPN<span>BOT</span></div>
+    <a href="#contact" class="nav-cta">Получить консультацию</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="badge fade-up">Готовый бизнес под ключ</div>
+    <h1 class="fade-up delay-1">
+      Telegram-бот<br>
+      <em>продаёт VPN</em><br>
+      пока ты спишь
+    </h1>
+    <p class="hero-sub fade-up delay-2">
+      Полностью автоматизированный сервис: оплата, выдача ключей, продления, напоминания.<br>
+      <b>Ты получаешь деньги — бот делает всё остальное.</b>
+    </p>
+    <div class="hero-ctas fade-up delay-3">
+      <a href="#contact" class="btn-primary">Заказать установку</a>
+      <a href="#how" class="btn-secondary">Как это работает →</a>
+    </div>
+    <div class="hero-stats fade-up delay-3">
+      <div class="stat">
+        <div class="stat-num">55К ₽</div>
+        <div class="stat-label">установка под ключ</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0 ч</div>
+        <div class="stat-label">ручной работы в сутки</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">40К ₽</div>
+        <div class="stat-label">доход/мес при 200 клиентах</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Что входит</div>
+      <h2>Всё для работающего<br>VPN-бизнеса</h2>
+      <p class="section-sub">Никаких «допилок» после сдачи — ставим и зарабатываешь сразу.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">Telegram-бот с кнопками</div>
+        <div class="feat-desc">Клиент нажимает — платит — получает ключ. Без менеджеров, без ручного труда. Работает 24/7.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">💳</div>
+        <div class="feat-title">Три метода оплаты</div>
+        <div class="feat-desc">Карты и СБП через YooKassa, криптовалюта (USDT/TON) через CryptoBot, и Telegram Stars — всё в одном боте.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🔑</div>
+        <div class="feat-title">Автовыдача VPN-ключей</div>
+        <div class="feat-desc">После оплаты бот сам создаёт пользователя в панели и высылает ключ с инструкцией. Всё в течение 10 секунд.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🔔</div>
+        <div class="feat-title">Напоминания и продления</div>
+        <div class="feat-desc">За 3 дня и за 1 день до истечения — автоматические напоминания с кнопкой продления. Возврат «мёртвых» клиентов через 3 дня после отключения.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🎁</div>
+        <div class="feat-title">Промокоды и рефералы</div>
+        <div class="feat-desc">Создавай скидки на любые планы. Реферальная программа: пригласил друга — получи бонусные дни автоматически.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Статистика и аналитика</div>
+        <div class="feat-desc">Команда /stat для администратора: выручка, активные подписки, конверсия. Клиенту — трафик и дата истечения.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🛡️</div>
+        <div class="feat-title">Защита от спама</div>
+        <div class="feat-desc">Rate limiting на инвойсы, защита от накрутки рефералов, watchdog-перезапуск при сбоях.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🌐</div>
+        <div class="feat-title">VPN на VLESS Reality</div>
+        <div class="feat-desc">Самый устойчивый к блокировкам протокол — маскируется под Microsoft.com. Работает там, где другие падают.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">⚙️</div>
+        <div class="feat-title">Документация и поддержка</div>
+        <div class="feat-desc">Инструкция по управлению, скрипт проверки системы, документ сдачи клиенту с всеми данными.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Как работает</div>
+      <h2>От установки до<br>первой оплаты — 1 день</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
+      <div class="flow">
+        <div class="flow-step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <div class="step-title">Запускаем сервер</div>
+            <div class="step-desc">Арендуешь VPS от 380 ₽/мес. Запускаем один скрипт — он всё устанавливает сам.</div>
+            <div class="step-code">bash install-full.sh</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <div class="step-title">Настраиваем оплату</div>
+            <div class="step-desc">Подключаем YooKassa (для карт) и CryptoBot (для крипты). Telegram Stars работает без регистрации.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <div class="step-title">Проверяем и сдаём</div>
+            <div class="step-desc">Автоматический скрипт проверяет все компоненты. Всё зелёное — бот готов к работе.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <div class="step-title">Клиенты платят — ты зарабатываешь</div>
+            <div class="step-desc">Бот работает 24/7, выдаёт ключи, напоминает о продлении. Ты только выводишь деньги.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <!-- TERMINAL MOCKUP -->
+        <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;">
+          <div style="background: var(--bg); padding: 14px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#ff4466"></div>
+            <div style="width:10px;height:10px;border-radius:50%;background:#ffaa00"></div>
+            <div style="width:10px;height:10px;border-radius:50%;background:#00ff88"></div>
+            <div style="font-family: var(--font-mono); font-size:11px; color: var(--muted); margin-left:12px">vpn-bot — bash</div>
+          </div>
+          <div style="padding: 24px 24px; font-family: var(--font-mono); font-size: 13px; line-height: 2;">
+            <div><span style="color:var(--muted)">#</span> <span style="color:var(--blue)">bash check.sh</span></div>
+            <div style="margin-top:8px">
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">Marzban контейнер запущен</span></div>
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">vpn-bot сервис активен</span></div>
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">BOT_TOKEN задан</span></div>
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">Авторизация Marzban ОК</span></div>
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">Inbound 'vless-in' найден</span></div>
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">Порт 443 открыт</span></div>
+              <div><span style="color:#00ff88">✓</span> <span style="color:var(--muted)">Критических ошибок нет</span></div>
+            </div>
+            <div style="margin-top:16px; padding-top:16px; border-top: 1px solid var(--border);">
+              <span style="color:#00ff88; font-weight:500">✅ Система готова к работе!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAYMENTS -->
+<section id="payments">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Приём оплаты</div>
+      <h2>Три способа<br>получить деньги</h2>
+      <p class="section-sub">Клиент платит как ему удобно — бот принимает всё.</p>
+    </div>
+    <div class="pay-grid">
+      <div class="pay-card">
+        <div class="pay-logo">💳</div>
+        <div class="pay-name">YooKassa</div>
+        <div class="pay-desc">Карты Visa/MC/МИР, СБП, оплата в один клик</div>
+        <div class="pay-tag">3.5% комиссия</div>
+      </div>
+      <div class="pay-card">
+        <div class="pay-logo">₿</div>
+        <div class="pay-name">CryptoBot</div>
+        <div class="pay-desc">USDT, TON, BTC и другие криптовалюты</div>
+        <div class="pay-tag">1% комиссия</div>
+      </div>
+      <div class="pay-card">
+        <div class="pay-logo">⭐</div>
+        <div class="pay-name">Telegram Stars</div>
+        <div class="pay-desc">Встроенная оплата Telegram, работает без регистрации</div>
+        <div class="pay-tag">без комиссии</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINANCE -->
+<section id="finance">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Финансы</div>
+      <h2>Честные цифры<br>без завышений</h2>
+      <p class="section-sub">Реальные расходы и реальная прибыль — без маркетинговой воды.</p>
+    </div>
+    <div class="finance-wrap">
+      <div class="costs-card">
+        <div class="costs-title">Ежемесячные расходы</div>
+        <div class="cost-row">
+          <span class="cost-label">VPS сервер (2 CPU, 4GB)</span>
+          <span class="cost-val">~380 ₽</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Домен + SSL</span>
+          <span class="cost-val">~60 ₽</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">YooKassa (3.5% от оборота)</span>
+          <span class="cost-val">переменная</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">CryptoBot (1% от оборота)</span>
+          <span class="cost-val">переменная</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Telegram Stars</span>
+          <span class="cost-val">0 ₽</span>
+        </div>
+        <div class="cost-total">
+          <span style="color:var(--muted)">Фиксированные расходы</span>
+          <span style="color:var(--blue)">~440 ₽/мес</span>
+        </div>
+      </div>
+
+      <div class="revenue-cards">
+        <div class="rev-card">
+          <div class="rev-left">
+            <div class="rev-clients">20 клиентов</div>
+            <div class="rev-title">Старт</div>
+          </div>
+          <div class="rev-right">
+            <div class="rev-profit">3 900 ₽</div>
+            <div class="rev-sub">чистыми в месяц</div>
+          </div>
+        </div>
+        <div class="rev-card hot">
+          <div class="rev-left">
+            <div class="rev-clients">80 клиентов <span class="hot-badge">РЕАЛЬНО</span></div>
+            <div class="rev-title">Рабочий режим</div>
+          </div>
+          <div class="rev-right">
+            <div class="rev-profit">16 400 ₽</div>
+            <div class="rev-sub">чистыми в месяц</div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rev-left">
+            <div class="rev-clients">200 клиентов</div>
+            <div class="rev-title">Масштаб</div>
+          </div>
+          <div class="rev-right">
+            <div class="rev-profit">40 800 ₽</div>
+            <div class="rev-sub">чистыми в месяц</div>
+          </div>
+        </div>
+        <div style="padding: 16px 0; font-size: 13px; color: var(--muted); line-height: 1.7;">
+          * Расчёт при средней цене 250 ₽/мес (план 1 месяц). Без учёта трат на рекламу — зависит от источника клиентов.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section id="compare">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Сравнение</div>
+      <h2>Против конкурентов</h2>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Функция</th>
+            <th class="ours">Наш бот</th>
+            <th>Remnawave</th>
+            <th>AmneziaVPN</th>
+            <th>Обычный бот</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Автовыдача ключей</td>
+            <td class="ours yes">✓ Есть</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="part">~ Частично</td>
+          </tr>
+          <tr>
+            <td>Карты + СБП</td>
+            <td class="ours yes">✓ YooKassa</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="part">~ Иногда</td>
+          </tr>
+          <tr>
+            <td>Криптовалюта</td>
+            <td class="ours yes">✓ CryptoBot</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="no">✗ Редко</td>
+          </tr>
+          <tr>
+            <td>Telegram Stars</td>
+            <td class="ours yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="no">✗ Нет</td>
+            <td class="no">✗ Нет</td>
+          </tr>
+          <tr>
+            <td>Промокоды</td>
+            <td class="ours yes">✓ Есть</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="no">✗ Нет</td>
+          </tr>
+          <tr>
+            <td>Реферальная программа</td>
+            <td class="ours yes">✓ Есть</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="no">✗ Нет</td>
+          </tr>
+          <tr>
+            <td>Напоминания о продлении</td>
+            <td class="ours yes">✓ Авто</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+            <td class="part">~ Вручную</td>
+          </tr>
+          <tr>
+            <td>Статистика трафика</td>
+            <td class="ours yes">✓ В боте</td>
+            <td class="yes">✓ Панель</td>
+            <td class="yes">✓ Есть</td>
+            <td class="no">✗ Нет</td>
+          </tr>
+          <tr>
+            <td>Открытый код</td>
+            <td class="ours yes">✓ Ваш</td>
+            <td class="no">✗ SaaS</td>
+            <td class="yes">✓ Открытый</td>
+            <td class="no">✗ Нет</td>
+          </tr>
+          <tr>
+            <td>Цена / месяц</td>
+            <td class="ours" style="color:var(--blue)!important">440 ₽ (сервер)</td>
+            <td>от 2 000 ₽</td>
+            <td>Бесплатно*</td>
+            <td>от 500 ₽</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">Стоимость</div>
+      <h2>Один раз вложил —<br>работает вечно</h2>
+    </div>
+    <div class="price-wrap">
+      <div class="price-card main">
+        <div class="price-badge">ХИТ</div>
+        <div class="price-name">Под ключ</div>
+        <div class="price-amount"><span>₽</span>55 000</div>
+        <div class="price-note">Единоразовый платёж. Без абонентки.</div>
+        <ul class="price-features">
+          <li>Установка на ваш VPS</li>
+          <li>Marzban + VLESS Reality</li>
+          <li>Telegram-бот с 3 оплатами</li>
+          <li>Промокоды и рефералы</li>
+          <li>Настройка watchdog</li>
+          <li>Инструкция по управлению</li>
+          <li>Месяц поддержки</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Поддержка</div>
+        <div class="price-amount"><span>₽</span>5 300</div>
+        <div class="price-note">В месяц. После первого месяца.</div>
+        <ul class="price-features">
+          <li>Мониторинг работы бота</li>
+          <li>Обновления и исправления</li>
+          <li>Ответы на вопросы</li>
+          <li>Резервные копии</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-label">FAQ</div>
+      <h2>Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Нужны ли технические знания для управления ботом?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Нет. После сдачи вы получаете документ со всеми командами управления — добавить дни клиенту, создать промокод, посмотреть статистику. Всё через Telegram-команды, без SSH и серверов.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Что будет, если сервер упадёт?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Установлен watchdog — скрипт, который каждые 2 минуты проверяет работу бота и перезапускает его при сбое. При падении также приходит уведомление в Telegram.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Какой VPS нужен? Сколько стоит?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Минимум: 2 CPU, 4GB RAM, Ubuntu 22.04. Хостинги: Aeza.net, Netcup, Vdsina — от 380 ₽/мес. Можно использовать европейские серверы — Marzban стабильно работает в любой стране.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          А вдруг VPN заблокируют в России?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            Используем протокол VLESS Reality — он маскируется под обычный HTTPS-трафик Microsoft.com. Роскомнадзор его не умеет блокировать без отключения половины интернета. Именно поэтому его используют крупные российские VPN-сервисы.
+          </div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли ИП для приёма оплаты?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            YooKassa требует ИП или самозанятость — это для карт и СБП. CryptoBot и Telegram Stars работают без регистрации. Можно начать с Stars и крипты, потом подключить карты.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="container">
+    <div class="section-label" style="margin-bottom:20px">Готов начать?</div>
+    <h2>Запусти VPN-бизнес<br>за один день</h2>
+    <p>Напиши — отвечу в течение часа. Обсудим задачу, сервер, сроки.</p>
+    <div class="cta-contact">
+      <a href="https://t.me/irek_agent" class="contact-pill">
+        <span>✈️</span> Telegram
+      </a>
+      <a href="https://wa.me/79179395757" class="contact-pill">
+        <span>📱</span> WhatsApp
+      </a>
+    </div>
+    <div style="margin-top:48px; display:flex; gap:32px; justify-content:center; flex-wrap:wrap;">
+      <div style="text-align:center">
+        <div style="font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--blue)">24 ч</div>
+        <div style="font-size:13px;color:var(--muted)">среднее время установки</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--blue)">1 год</div>
+        <div style="font-size:13px;color:var(--muted)">опыта в автоматизации</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--blue)">100%</div>
+        <div style="font-size:13px;color:var(--muted)">рабочий код, проверено</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p style="color:var(--muted)">VPN-бот под ключ · Telegram-автоматизация · 2025</p>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .pay-card, .rev-card, .flow-step, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
