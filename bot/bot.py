@@ -1,21 +1,23 @@
 """
-VPN Sales Bot — полная автоматизация продаж
-Функции: пробный период, оплата картой/криптой, рефералы,
-         напоминания, антифрод, продление, кабинет клиента.
+VPN Sales Bot v2 — полная автоматизация продаж
+Оплата: Telegram Stars + YooKassa (карты/СБП) + CryptoBot (USDT)
+Функции: пробный период, промокоды, трафик в кабинете,
+         напоминания, рефералы, антифрод, admin-команды.
 """
 import logging
 from datetime import datetime, timedelta
 
-from telegram import Update, InlineKeyboardButton as IKB, InlineKeyboardMarkup as IKM
+from telegram import Update, InlineKeyboardButton as IKB, InlineKeyboardMarkup as IKM, LabeledPrice
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler,
-    ContextTypes, MessageHandler, filters,
+    ContextTypes, PreCheckoutQueryHandler,
+    MessageHandler, filters,
 )
 
 import db, marzban, payments, scheduler
 from config import (
     BOT_TOKEN, BOT_USERNAME, ADMIN_IDS, PLANS, OLD_PRICES,
-    RATE_LIMIT, REF_BONUS, TRIAL_DAYS,
+    RATE_LIMIT, REF_BONUS, TRIAL_DAYS, STARS_ENABLED, CHANNEL_ID,
 )
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
@@ -178,22 +180,34 @@ async def cb_plan(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     plan_key = query.data.replace("plan_", "")
     await query.answer()
 
-    # Антифрод
     if not db.can_invoice(tg_id, RATE_LIMIT):
-        await query.answer(
-            "Подожди немного перед созданием нового счёта.", show_alert=True
-        )
+        await query.answer("Подожди немного перед созданием нового счёта.", show_alert=True)
         return
 
     plan = PLANS[plan_key]
-    rows = [
-        [IKB(f"💳 Карта / СБП — {plan['rub']}₽", callback_data=f"pay_card_{plan_key}")],
-        [IKB(f"🪙 USDT — {plan['usdt']} USDT", callback_data=f"pay_crypto_{plan_key}")],
-        [IKB("⬅️ Назад", callback_data="buy")],
-    ]
+
+    # Проверяем есть ли активный промокод в ctx (сохраняется через cb_promo)
+    promo      = ctx.user_data.get("promo")
+    disc_pct   = promo["discount_pct"] if promo else 0
+    rub_final  = round(plan["rub"] * (1 - disc_pct / 100))
+    usdt_final = round(plan["usdt"] * (1 - disc_pct / 100), 2)
+    stars_final = round(plan["stars"] * (1 - disc_pct / 100))
+
+    promo_note = f"\n🏷 Промокод <b>{promo['code']}</b>: скидка {disc_pct}%!" if promo else ""
+
+    rows = []
+    if STARS_ENABLED and plan["stars"]:
+        rows.append([IKB(f"⭐ Telegram Stars — {stars_final} Stars", callback_data=f"pay_stars_{plan_key}")])
+    rows.append([IKB(f"💳 Карта / СБП — {rub_final}₽", callback_data=f"pay_card_{plan_key}")])
+    rows.append([IKB(f"🪙 USDT — {usdt_final} USDT", callback_data=f"pay_crypto_{plan_key}")])
+    if not promo:
+        rows.append([IKB("🏷 Есть промокод", callback_data=f"promo_{plan_key}")])
+    rows.append([IKB("⬅️ Назад", callback_data="buy")])
+
     await query.edit_message_text(
         f"📦 <b>{plan['name']}</b>\n\n"
-        f"Срок: {plan['days']} дней  |  Трафик: {'∞' if plan['gb'] > 999 else str(plan['gb'])+' ГБ'}\n\n"
+        f"Срок: {plan['days']} дней  |  Трафик: {'∞' if plan['gb'] > 999 else str(plan['gb'])+' ГБ'}"
+        f"{promo_note}\n\n"
         f"Выбери способ оплаты:",
         parse_mode="HTML",
         reply_markup=IKM(rows)
@@ -201,55 +215,172 @@ async def cb_plan(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 async def cb_pay(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Карта (YooKassa) и крипта (CryptoBot)."""
     query    = update.callback_query
     tg_id    = query.from_user.id
-    _, method, plan_key = query.data.split("_", 2)  # pay_card_3m → card, 3m
+    _, method, plan_key = query.data.split("_", 2)
     await query.answer()
 
-    plan = PLANS[plan_key]
+    plan       = PLANS[plan_key]
+    promo      = ctx.user_data.get("promo")
+    disc_pct   = promo["discount_pct"] if promo else 0
+    rub_final  = round(plan["rub"]  * (1 - disc_pct / 100))
+    usdt_final = round(plan["usdt"] * (1 - disc_pct / 100), 2)
 
     try:
         if method == "crypto":
-            inv = payments.crypto_create(
-                plan["usdt"], f"VPN {plan['name']}"
-            )
+            inv = payments.crypto_create(usdt_final, f"VPN {plan['name']}")
         else:
-            inv = payments.yk_create(
-                plan["rub"],
-                f"VPN {plan['name']}",
-                return_url=f"https://t.me/{BOT_USERNAME}"
-            )
+            inv = payments.yk_create(rub_final, f"VPN {plan['name']}",
+                                     return_url=f"https://t.me/{BOT_USERNAME}")
     except Exception as e:
-        log.error(f"Create invoice error tg:{tg_id} {method}: {e}")
+        log.error(f"Create invoice tg:{tg_id} {method}: {e}")
         await query.edit_message_text(
-            "❌ Не удалось создать счёт. Попробуй другой способ оплаты или обратись в поддержку /start"
+            "❌ Не удалось создать счёт. Попробуй другой способ оплаты или /start"
         )
         return
 
-    db.add_payment(
-        tg_id, inv["invoice_id"], method, plan_key,
-        amount_rub=plan["rub"] if method == "card" else 0,
-        amount_usdt=plan["usdt"] if method == "crypto" else 0,
-    )
+    db.add_payment(tg_id, inv["invoice_id"], method, plan_key,
+                   amount_rub=rub_final if method == "card" else 0,
+                   amount_usdt=usdt_final if method == "crypto" else 0)
     db.touch_rate(tg_id)
 
-    amount_label = f"{plan['usdt']} USDT" if method == "crypto" else f"{plan['rub']}₽"
-    btn_label    = f"💳 Оплатить {amount_label}"
+    # Фиксируем промокод
+    if promo:
+        db.apply_promo(promo["code"], tg_id)
+        ctx.user_data.pop("promo", None)
+
+    label = f"{usdt_final} USDT" if method == "crypto" else f"{rub_final}₽"
     await query.edit_message_text(
         f"🧾 <b>Счёт создан</b>\n\n"
-        f"Тариф: {plan['name']}\n"
-        f"Сумма: <b>{amount_label}</b>\n\n"
-        f"1. Нажми «{btn_label}»\n"
-        f"2. Оплати\n"
-        f"3. Вернись сюда и нажми «Проверить оплату»\n\n"
-        f"VPN-ключ придёт автоматически в течение 1 минуты после оплаты.",
+        f"Тариф: {plan['name']}\nСумма: <b>{label}</b>\n\n"
+        f"1. Нажми «Оплатить»\n"
+        f"2. Оплати в открывшемся окне\n"
+        f"3. Нажми «Проверить оплату» — ключ придёт за 30 секунд.",
         parse_mode="HTML",
         reply_markup=IKM([
-            [IKB(btn_label, url=inv["pay_url"])],
+            [IKB(f"💳 Оплатить {label}", url=inv["pay_url"])],
             [IKB("✅ Проверить оплату", callback_data=f"chk_{inv['invoice_id']}_{method}")],
             [IKB("⬅️ Назад", callback_data="buy")],
         ])
     )
+
+
+async def cb_pay_stars(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Telegram Stars — нативная оплата внутри Telegram."""
+    query    = update.callback_query
+    tg_id    = query.from_user.id
+    plan_key = query.data.replace("pay_stars_", "")
+    await query.answer()
+
+    plan       = PLANS[plan_key]
+    promo      = ctx.user_data.get("promo")
+    disc_pct   = promo["discount_pct"] if promo else 0
+    stars_final = max(1, round(plan["stars"] * (1 - disc_pct / 100)))
+
+    if promo:
+        db.apply_promo(promo["code"], tg_id)
+        ctx.user_data.pop("promo", None)
+
+    # Отправляем инвойс через нативный Telegram Stars
+    await ctx.bot.send_invoice(
+        chat_id=query.message.chat_id,
+        title=f"VPN — {plan['name']}",
+        description="VLESS Reality VPN. Все устройства. Ключ придёт автоматически.",
+        payload=f"stars|{plan_key}|{tg_id}",
+        currency="XTR",
+        prices=[LabeledPrice(plan["name"], stars_final)],
+    )
+    await query.edit_message_text(
+        f"⭐ <b>Счёт на {stars_final} Stars</b>\n\nОплати в сообщении выше — ключ придёт автоматически.",
+        parse_mode="HTML"
+    )
+
+
+async def pre_checkout(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Подтверждаем любой Stars-платёж."""
+    await update.pre_checkout_query.answer(ok=True)
+
+
+async def successful_payment(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Обрабатываем Stars-платёж после успешного списания."""
+    payload  = update.message.successful_payment.invoice_payload
+    tg_id    = update.effective_user.id
+
+    try:
+        _, plan_key, _ = payload.split("|")
+    except ValueError:
+        return
+
+    plan = PLANS.get(plan_key, {})
+    days = plan.get("days", 30)
+    gb   = plan.get("gb", 100)
+    stars = update.message.successful_payment.total_amount
+
+    # Записываем платёж (Stars → рублёвый эквивалент ~0.7₽/Stars)
+    inv_id = f"stars_{tg_id}_{update.message.message_id}"
+    db.add_payment(tg_id, inv_id, "stars", plan_key,
+                   amount_rub=round(stars * 0.7), amount_usdt=0)
+    db.mark_paid(inv_id)
+
+    # Создаём/продлеваем VPN
+    try:
+        sub = db.get_active_sub(tg_id)
+        if sub:
+            new_exp = max(datetime.fromisoformat(sub["expires_at"]),
+                          datetime.utcnow()) + timedelta(days=days)
+            marzban.set_expire(sub["vpn_user"], new_exp)
+            db.extend_or_add(tg_id, sub["vpn_user"], plan_key, days)
+            vpn_user = sub["vpn_user"]
+        else:
+            data     = marzban.create_user(tg_id, days, gb)
+            vpn_user = data["username"]
+            db.add_subscription(tg_id, vpn_user, plan_key, days)
+    except Exception as e:
+        log.error(f"Stars Marzban error tg:{tg_id}: {e}")
+        await update.message.reply_html(
+            "✅ Оплата получена! Ключ генерируется, пришлём через минуту."
+        )
+        return
+
+    links     = marzban.get_links(vpn_user)
+    links_txt = "\n".join(f"<code>{l}</code>" for l in links)
+    exp_date  = (datetime.utcnow() + timedelta(days=days)).strftime("%d.%m.%Y")
+
+    await update.message.reply_html(
+        f"✅ <b>VPN активирован!</b>\n\n"
+        f"Тариф: {plan.get('name', plan_key)}  |  До: <b>{exp_date}</b>\n\n"
+        f"<b>🔑 Ключ:</b>\n{links_txt}\n\n"
+        f"Hiddify: + → Добавить по ссылке → вставь ключ."
+    )
+
+    # Реферальный бонус
+    referrer_id = db.get_referrer(tg_id)
+    if referrer_id and db.try_give_bonus(referrer_id, tg_id):
+        try:
+            await ctx.bot.send_message(
+                referrer_id,
+                f"🎁 <b>+{REF_BONUS} дней!</b> Твой друг оплатил подписку.",
+                parse_mode="HTML"
+            )
+        except Exception:
+            pass
+
+    # Пост в канал
+    if CHANNEL_ID:
+        try:
+            await ctx.bot.send_message(
+                CHANNEL_ID,
+                f"💚 Новая продажа — {plan.get('name', plan_key)} (Stars)"
+            )
+        except Exception:
+            pass
+
+    if ADMIN_IDS:
+        await ctx.bot.send_message(
+            ADMIN_IDS[0],
+            f"💚 Stars-продажа! tg:{tg_id} | {plan.get('name')} | ⭐{stars}"
+        )
 
 
 async def cb_check(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -294,19 +425,28 @@ async def cb_mysub(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    exp = datetime.fromisoformat(sub["expires_at"])
+    exp       = datetime.fromisoformat(sub["expires_at"])
     days_left = max(0, (exp - datetime.utcnow()).days)
 
     try:
-        links = marzban.get_links(sub["vpn_user"])
+        links      = marzban.get_links(sub["vpn_user"])
         links_text = "\n".join(f"<code>{l}</code>" for l in links)
+        traffic    = marzban.get_traffic(sub["vpn_user"])
+        used_gb    = traffic.get("used_gb", 0)
+        limit_gb   = traffic.get("limit_gb", 0)
+        if limit_gb:
+            traffic_line = f"📶 Трафик: <b>{used_gb} ГБ</b> из {limit_gb} ГБ использовано"
+        else:
+            traffic_line = f"📶 Трафик: <b>{used_gb} ГБ</b> использовано (безлимит)"
     except Exception:
-        links_text = "<i>Не удалось загрузить ключ. Обратись в поддержку.</i>"
+        links_text   = "<i>Ошибка загрузки ключа. Обратись в поддержку.</i>"
+        traffic_line = ""
 
     await query.edit_message_text(
         f"📊 <b>Моя подписка</b>\n\n"
         f"Тариф: {PLANS.get(sub['plan'], {}).get('name', sub['plan'])}\n"
-        f"Истекает: <b>{exp.strftime('%d.%m.%Y')}</b> (осталось {days_left} дн.)\n\n"
+        f"Истекает: <b>{exp.strftime('%d.%m.%Y')}</b> (осталось {days_left} дн.)\n"
+        f"{traffic_line}\n\n"
         f"<b>🔑 Ключ:</b>\n{links_text}",
         parse_mode="HTML",
         reply_markup=IKM([
@@ -378,6 +518,49 @@ async def cb_back(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     )
 
 
+# ─── Промокоды ───────────────────────────────────────────────────────────────
+
+async def cb_promo(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Кнопка «Есть промокод» — просит ввести код."""
+    query    = update.callback_query
+    plan_key = query.data.replace("promo_", "")
+    await query.answer()
+    ctx.user_data["awaiting_promo_plan"] = plan_key
+    await query.edit_message_text(
+        "🏷 <b>Введи промокод</b>\n\nНапечатай код и отправь сообщением:",
+        parse_mode="HTML",
+        reply_markup=IKM([[IKB("⬅️ Отмена", callback_data=f"plan_{plan_key}")]])
+    )
+
+
+async def handle_promo_text(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Принимает текстовый ввод промокода."""
+    plan_key = ctx.user_data.get("awaiting_promo_plan")
+    if not plan_key:
+        return
+
+    code  = update.message.text.strip().upper()
+    tg_id = update.effective_user.id
+    promo = db.check_promo(code, tg_id)
+
+    if not promo:
+        await update.message.reply_html(
+            "❌ Промокод не найден или уже использован.\n\n"
+            f"Продолжить без скидки → нажми /start → Купить VPN"
+        )
+        ctx.user_data.pop("awaiting_promo_plan", None)
+        return
+
+    ctx.user_data["promo"] = {"code": code, "discount_pct": promo["discount_pct"]}
+    ctx.user_data.pop("awaiting_promo_plan", None)
+
+    await update.message.reply_html(
+        f"✅ Промокод <b>{code}</b> активирован — скидка <b>{promo['discount_pct']}%</b>!\n\n"
+        f"Возврат к выбору тарифа:",
+        reply_markup=IKM([[IKB("← Выбрать тариф", callback_data=f"plan_{plan_key}")]])
+    )
+
+
 # ─── Команды администратора ───────────────────────────────────────────────────
 
 async def cmd_stat(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -440,7 +623,7 @@ async def cmd_adddays(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 async def cmd_broadcast(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    """Рассылка всем: /broadcast <текст>"""
+    """Рассылка: /broadcast <текст>"""
     if not is_admin(update.effective_user.id):
         return
     text = " ".join(ctx.args)
@@ -458,8 +641,32 @@ async def cmd_broadcast(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
             ok += 1
         except Exception:
             pass
-
     await update.message.reply_text(f"✅ Отправлено {ok}/{len(rows)}")
+
+
+async def cmd_promo(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """/promo CODE DISCOUNT_PCT [USES] — создать промокод. USES=-1 безлимит."""
+    if not is_admin(update.effective_user.id):
+        return
+    args = ctx.args
+    if len(args) < 2:
+        await update.message.reply_text("Формат: /promo КОД СКИДКА_% [КОЛ-ВО_ИСПОЛЬЗОВАНИЙ]\nПример: /promo SUPER20 20 100")
+        return
+    code     = args[0].upper()
+    try:
+        disc = int(args[1])
+        uses = int(args[2]) if len(args) > 2 else -1
+    except ValueError:
+        await update.message.reply_text("СКИДКА и КОЛ-ВО должны быть числами.")
+        return
+    db.create_promo(code, disc, uses)
+    uses_label = "∞" if uses == -1 else str(uses)
+    await update.message.reply_html(
+        f"✅ Промокод создан:\n"
+        f"Код: <code>{code}</code>\n"
+        f"Скидка: <b>{disc}%</b>\n"
+        f"Использований: <b>{uses_label}</b>"
+    )
 
 
 # ─── Запуск ───────────────────────────────────────────────────────────────────
@@ -482,15 +689,27 @@ def main():
     app.add_handler(CommandHandler("stat",      cmd_stat))
     app.add_handler(CommandHandler("adddays",   cmd_adddays))
     app.add_handler(CommandHandler("broadcast", cmd_broadcast))
+    app.add_handler(CommandHandler("promo",     cmd_promo))
+
+    # Telegram Stars
+    app.add_handler(PreCheckoutQueryHandler(pre_checkout))
+    app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment))
+
+    # Промокод — текстовый ввод (до общего текст-хендлера)
+    app.add_handler(MessageHandler(
+        filters.TEXT & ~filters.COMMAND, handle_promo_text
+    ))
 
     # Кнопки
-    app.add_handler(CallbackQueryHandler(cb_trial,  pattern="^trial$"))
-    app.add_handler(CallbackQueryHandler(cb_buy,    pattern="^buy$"))
-    app.add_handler(CallbackQueryHandler(cb_plan,   pattern="^plan_"))
-    app.add_handler(CallbackQueryHandler(cb_pay,    pattern="^pay_"))
-    app.add_handler(CallbackQueryHandler(cb_check,  pattern="^chk_"))
-    app.add_handler(CallbackQueryHandler(cb_mysub,  pattern="^mysub$"))
-    app.add_handler(CallbackQueryHandler(cb_ref,    pattern="^ref$"))
+    app.add_handler(CallbackQueryHandler(cb_trial,      pattern="^trial$"))
+    app.add_handler(CallbackQueryHandler(cb_buy,        pattern="^buy$"))
+    app.add_handler(CallbackQueryHandler(cb_plan,       pattern="^plan_"))
+    app.add_handler(CallbackQueryHandler(cb_pay,        pattern="^pay_(?!stars)"))
+    app.add_handler(CallbackQueryHandler(cb_pay_stars,  pattern="^pay_stars_"))
+    app.add_handler(CallbackQueryHandler(cb_check,      pattern="^chk_"))
+    app.add_handler(CallbackQueryHandler(cb_promo,      pattern="^promo_"))
+    app.add_handler(CallbackQueryHandler(cb_mysub,      pattern="^mysub$"))
+    app.add_handler(CallbackQueryHandler(cb_ref,        pattern="^ref$"))
     app.add_handler(CallbackQueryHandler(cb_howto,  pattern="^howto$"))
     app.add_handler(CallbackQueryHandler(cb_support,pattern="^support$"))
     app.add_handler(CallbackQueryHandler(cb_back,   pattern="^back$"))

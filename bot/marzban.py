@@ -62,6 +62,22 @@ def delete_user(username: str):
     requests.delete(f"{MARZBAN_URL}/api/user/{username}", headers=_h(), timeout=10)
 
 
+def get_traffic(username: str) -> dict:
+    """Возвращает {used_gb, limit_gb, remaining_gb} для пользователя."""
+    r = requests.get(f"{MARZBAN_URL}/api/user/{username}", headers=_h(), timeout=10)
+    if not r.ok:
+        return {}
+    d = r.json()
+    used  = d.get("used_traffic", 0)
+    limit = d.get("data_limit", 0)
+    return {
+        "used_gb":      round(used / 1_073_741_824, 2),
+        "limit_gb":     round(limit / 1_073_741_824, 2) if limit else 0,
+        "remaining_gb": round((limit - used) / 1_073_741_824, 2) if limit else -1,
+        "status":       d.get("status", "unknown"),
+    }
+
+
 def panel_stats() -> dict:
     r = requests.get(f"{MARZBAN_URL}/api/core/stats", headers=_h(), timeout=10)
     return r.json() if r.ok else {}

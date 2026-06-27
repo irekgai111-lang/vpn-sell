@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPN-бизнес: полный анализ, идеальная модель, установка</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;line-height:1.65}
+a{color:#58a6ff;text-decoration:none}
+
+/* Навигация */
+.nav{position:sticky;top:0;background:rgba(13,17,23,.95);backdrop-filter:blur(8px);border-bottom:1px solid #21262d;padding:12px 24px;display:flex;gap:20px;z-index:100;flex-wrap:wrap}
+.nav a{font-size:13px;color:#8b949e;transition:.2s}.nav a:hover{color:#58a6ff}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#0d1117,#161b22,#0d1117);padding:64px 24px 48px;text-align:center;border-bottom:1px solid #21262d}
+.hero-badge{display:inline-block;background:rgba(88,166,255,.12);color:#58a6ff;border:1px solid rgba(88,166,255,.3);padding:6px 18px;border-radius:20px;font-size:13px;margin-bottom:20px}
+.hero h1{font-size:38px;font-weight:800;background:linear-gradient(135deg,#58a6ff,#a5f3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px}
+.hero p{font-size:17px;color:#8b949e;max-width:620px;margin:0 auto}
+
+.wrap{max-width:960px;margin:0 auto;padding:48px 24px}
+.section{margin-bottom:60px}
+.s-title{font-size:24px;font-weight:700;margin-bottom:28px;display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid #21262d}
+.s-title .num{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#58a6ff,#1f6feb);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+
+/* Сравнение */
+.compare-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #21262d;border-radius:16px;overflow:hidden}
+.cg-head{background:#161b22;padding:16px;text-align:center;border-right:1px solid #21262d;border-bottom:1px solid #21262d}
+.cg-head:last-child{border-right:none}
+.cg-head .name{font-weight:700;font-size:15px}
+.cg-head .sub{font-size:12px;color:#8b949e;margin-top:4px}
+.cg-head.us{background:linear-gradient(135deg,#0d2d1a,#161b22);border-top:2px solid #2ea043}
+.cg-row{display:contents}
+.cg-cell{padding:12px 14px;border-right:1px solid #21262d;border-bottom:1px solid #21262d;font-size:13px;color:#c9d1d9}
+.cg-cell:last-child{border-right:none}
+.cg-cell.label{background:#0d1117;color:#8b949e;font-weight:600;font-size:12px}
+.cg-row:last-child .cg-cell{border-bottom:none}
+.c-yes{color:#3fb950}.c-no{color:#f85149}.c-mid{color:#d29922}
+
+/* Карточки конкурентов */
+.comp-cards{display:grid;gap:20px}
+.comp-card{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:24px}
+.comp-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.comp-rank{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.r1{background:linear-gradient(135deg,#1f6feb,#388bfd)}
+.r2{background:linear-gradient(135deg,#8250df,#a371f7)}
+.r3{background:linear-gradient(135deg,#bf4b4b,#e5534b)}
+.comp-name{font-size:18px;font-weight:700}
+.comp-sub{font-size:13px;color:#8b949e;margin-top:2px}
+.adv-list{list-style:none}
+.adv-list li{font-size:13px;padding:5px 0;border-bottom:1px solid #21262d;color:#c9d1d9}
+.adv-list li:last-child{border-bottom:none}
+.adv-list li::before{content:"▸ ";color:#58a6ff}
+.tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600;margin-left:6px}
+.tag-green{background:rgba(63,185,80,.2);color:#3fb950}
+.tag-blue{background:rgba(88,166,255,.2);color:#58a6ff}
+
+/* Финансы */
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.fin-box{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:24px}
+.fin-box h3{font-size:15px;font-weight:600;color:#8b949e;margin-bottom:16px}
+.fin-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #21262d;font-size:14px}
+.fin-row:last-child{border-bottom:none}
+.fin-val{font-weight:600}.green{color:#3fb950}.red{color:#f85149}.blue{color:#58a6ff}
+.fin-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.scenario{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;text-align:center}
+.scenario.best{border-color:#2ea043;background:linear-gradient(135deg,#0d2d1a,#161b22)}
+.sc-label{font-size:13px;color:#8b949e;margin-bottom:8px}
+.sc-users{font-size:26px;font-weight:800;color:#e6edf3}
+.sc-revenue{font-size:20px;font-weight:700;color:#3fb950;margin:8px 0}
+.sc-costs{font-size:13px;color:#f85149}
+.sc-net{font-size:13px;color:#8b949e;margin-top:6px}
+.warning-box{background:rgba(210,153,34,.1);border:1px solid rgba(210,153,34,.3);border-radius:12px;padding:18px;margin-top:20px}
+.warning-box p{font-size:14px;color:#d29922}
+
+/* Шаги установки */
+.steps{display:grid;gap:0}
+.step{display:flex;gap:0;position:relative}
+.step-left{display:flex;flex-direction:column;align-items:center;width:56px;flex-shrink:0}
+.step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;z-index:1;flex-shrink:0}
+.step-line{width:2px;background:#21262d;flex:1;margin:4px 0}
+.step:last-child .step-line{display:none}
+.step-body{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;margin-bottom:16px;flex:1;margin-left:16px}
+.step-body h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.step-body p{font-size:14px;color:#8b949e;margin-bottom:8px}
+.step-body p:last-child{margin-bottom:0}
+.sc-phase{display:inline-block;font-size:11px;font-weight:600;padding:2px 10px;border-radius:10px;margin-bottom:8px}
+.ph-prep{background:rgba(88,166,255,.15);color:#58a6ff}
+.ph-install{background:rgba(63,185,80,.15);color:#3fb950}
+.ph-config{background:rgba(210,153,34,.15);color:#d29922}
+.ph-test{background:rgba(130,80,223,.15);color:#a371f7}
+.ph-launch{background:rgba(191,75,75,.15);color:#e5534b}
+.sc1{background:linear-gradient(135deg,#1f6feb,#388bfd)}
+.sc2{background:linear-gradient(135deg,#2ea043,#3fb950)}
+.sc3{background:linear-gradient(135deg,#d29922,#e3b341)}
+.sc4{background:linear-gradient(135deg,#8250df,#a371f7)}
+.sc5{background:linear-gradient(135deg,#bf4b4b,#e5534b)}
+.sc6{background:linear-gradient(135deg,#1f6feb,#0d419d)}
+.sc7{background:linear-gradient(135deg,#2ea043,#196c2e)}
+.sc8{background:linear-gradient(135deg,#58a6ff,#1f6feb)}
+.sc9{background:linear-gradient(135deg,#3fb950,#2ea043)}
+.sc10{background:linear-gradient(135deg,#f78166,#ff7b72)}
+
+code{background:#21262d;color:#79c0ff;padding:2px 8px;border-radius:5px;font-family:monospace;font-size:13px}
+.cmd{background:#010409;border:1px solid #30363d;border-radius:10px;padding:16px;margin:10px 0;font-family:monospace;font-size:13px;line-height:1.7}
+.cmd .comment{color:#8b949e}.cmd .c{color:#79c0ff}
+
+/* Идеальная модель */
+.ideal-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ideal-card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px}
+.ideal-card.new{border-color:#58a6ff;background:linear-gradient(135deg,#0d1f38,#161b22)}
+.ideal-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.ideal-title .badge{font-size:11px;background:rgba(88,166,255,.2);color:#58a6ff;padding:2px 8px;border-radius:8px;margin-left:6px}
+.ideal-title .badge.new2{background:rgba(63,185,80,.2);color:#3fb950}
+ul.feat{list-style:none}
+ul.feat li{font-size:13px;color:#c9d1d9;padding:4px 0}
+ul.feat li::before{content:"✓ ";color:#3fb950}
+ul.feat li.new3::before{color:#58a6ff}
+
+/* Архитектура */
+.arch-flow{display:flex;align-items:stretch;gap:0;margin:20px 0;overflow-x:auto}
+.arch-block{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:16px 18px;text-align:center;min-width:120px;flex:1}
+.arch-block .emoji{font-size:22px;margin-bottom:6px}
+.arch-block .name{font-size:13px;font-weight:600}
+.arch-block .tech{font-size:11px;color:#8b949e;margin-top:3px}
+.arch-sep{display:flex;align-items:center;padding:0 8px;color:#58a6ff;font-size:18px;flex-shrink:0}
+
+/* Чеклист */
+.checklist{display:grid;gap:10px}
+.check-item{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;font-size:14px}
+.check-item .chk{width:24px;height:24px;border-radius:6px;border:2px solid #21262d;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px}
+.check-item.done .chk{background:#2ea043;border-color:#2ea043;color:#fff}
+.check-item.todo .chk{border-color:#58a6ff}
+
+@media(max-width:640px){
+  .hero h1{font-size:26px}
+  .compare-grid{grid-template-columns:1fr 1fr}
+  .fin-grid{grid-template-columns:1fr}
+  .fin-scenarios{grid-template-columns:1fr}
+  .ideal-grid{grid-template-columns:1fr}
+  .arch-flow{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="#compare">Сравнение</a>
+  <a href="#gaps">Что упускаем</a>
+  <a href="#ideal">Идеальная модель</a>
+  <a href="#finance">Финансы</a>
+  <a href="#install">Установка</a>
+  <a href="#test">Тест</a>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">🔬 Профессиональный анализ рынка VPN России 2026</div>
+  <h1>Наша модель vs Топ-3 рынка</h1>
+  <p>Честное сравнение, реальные цифры, идеальная рабочая система и пошаговая установка</p>
+</div>
+
+<div class="wrap">
+
+<!-- БЛОК 1: СРАВНЕНИЕ -->
+<div class="section" id="compare">
+  <div class="s-title"><span class="num">1</span> Сравнение с топ-3 конкурентами</div>
+
+  <!-- Таблица -->
+  <div class="compare-grid" style="margin-bottom:32px">
+    <div class="cg-head us"><div class="name">🟢 Наш бот</div><div class="sub">Marzban + бот</div></div>
+    <div class="cg-head"><div class="name">Remnawave</div><div class="sub">Marzban fork #1</div></div>
+    <div class="cg-head"><div class="name">AmneziaVPN</div><div class="sub">RU-протокол</div></div>
+    <div class="cg-head"><div class="name">Коммерч. боты</div><div class="sub">VPNBot.ru тип</div></div>
+
+    <div class="cg-cell label">Протокол</div>
+    <div class="cg-cell">VLESS Reality</div>
+    <div class="cg-cell"><span class="c-yes">VLESS+WG+SS</span></div>
+    <div class="cg-cell"><span class="c-yes">AmneziaWG</span></div>
+    <div class="cg-cell">VLESS Reality</div>
+
+    <div class="cg-cell label">Защита от блокировок</div>
+    <div class="cg-cell"><span class="c-mid">Высокая</span></div>
+    <div class="cg-cell"><span class="c-yes">Очень высокая</span></div>
+    <div class="cg-cell"><span class="c-yes">Максимальная</span></div>
+    <div class="cg-cell"><span class="c-mid">Высокая</span></div>
+
+    <div class="cg-cell label">Оплата картой (РФ)</div>
+    <div class="cg-cell"><span class="c-yes">✓ YooKassa</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ ЮК + Robokassa</span></div>
+    <div class="cg-cell"><span class="c-no">✗</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ Все способы</span></div>
+
+    <div class="cg-cell label">Telegram Stars</div>
+    <div class="cg-cell"><span class="c-no">✗ нет</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+    <div class="cg-cell"><span class="c-no">✗</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+
+    <div class="cg-cell label">Промокоды</div>
+    <div class="cg-cell"><span class="c-no">✗ нет</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+    <div class="cg-cell"><span class="c-no">✗</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+
+    <div class="cg-cell label">Трафик в личном кабинете</div>
+    <div class="cg-cell"><span class="c-no">✗ нет</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+    <div class="cg-cell"><span class="c-mid">частично</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+
+    <div class="cg-cell label">Мульти-сервер</div>
+    <div class="cg-cell"><span class="c-no">✗ нет</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ из коробки</span></div>
+    <div class="cg-cell"><span class="c-mid">ручная</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ 5–20 серверов</span></div>
+
+    <div class="cg-cell label">Напоминания</div>
+    <div class="cg-cell"><span class="c-yes">✓ за 3д/1д/0д</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ настраиваемые</span></div>
+    <div class="cg-cell"><span class="c-no">✗</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+
+    <div class="cg-cell label">Реферальная система</div>
+    <div class="cg-cell"><span class="c-yes">✓ +7 дней</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ % от платежа</span></div>
+    <div class="cg-cell"><span class="c-no">✗</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ денежный %</span></div>
+
+    <div class="cg-cell label">Пробный период</div>
+    <div class="cg-cell"><span class="c-yes">✓ 3 дня</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ 1–7 дней</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ есть</span></div>
+    <div class="cg-cell"><span class="c-mid">не всегда</span></div>
+
+    <div class="cg-cell label">SSL / HTTPS панель</div>
+    <div class="cg-cell"><span class="c-yes">✓ Nginx+LE</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ авто</span></div>
+    <div class="cg-cell"><span class="c-yes">✓</span></div>
+    <div class="cg-cell"><span class="c-yes">✓</span></div>
+
+    <div class="cg-cell label">База данных</div>
+    <div class="cg-cell"><span class="c-yes">✓ SQLite</span></div>
+    <div class="cg-cell"><span class="c-yes">✓ PostgreSQL</span></div>
+    <div class="cg-cell"><span class="c-yes">✓</span></div>
+    <div class="cg-cell"><span class="c-yes">✓</span></div>
+
+    <div class="cg-cell label">Стоимость</div>
+    <div class="cg-cell"><span class="c-yes">Бесплатно</span></div>
+    <div class="cg-cell"><span class="c-yes">Бесплатно</span></div>
+    <div class="cg-cell"><span class="c-yes">Бесплатно</span></div>
+    <div class="cg-cell"><span class="c-no">Платное</span></div>
+  </div>
+
+  <!-- Карточки конкурентов -->
+  <div class="comp-cards">
+
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-rank r1">🥇</div>
+        <div>
+          <div class="comp-name">Remnawave</div>
+          <div class="comp-sub">github.com/remnawave — лучший форк Marzban, активно развивается в 2025–2026</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:#c9d1d9;margin-bottom:12px">
+        Самый продвинутый инструмент для VPN-бизнеса. Всё что есть у Marzban — плюс мощный встроенный Telegram-бот с подпиской, промокодами, статистикой трафика и поддержкой нескольких серверов. Нативная поддержка Telegram Stars.
+      </p>
+      <p style="font-size:13px;font-weight:600;color:#8b949e;margin-bottom:8px">Что у них есть, чего нет у нас:</p>
+      <ul class="adv-list">
+        <li>Telegram Stars как способ оплаты (ноль документов, моментально) <span class="tag tag-green">КРИТИЧНО</span></li>
+        <li>Статистика потреблённого трафика в боте у клиента</li>
+        <li>Промокоды со скидками (конверсия +30%)</li>
+        <li>Денежные реферальные выплаты (не дни, а рубли/крипта)</li>
+        <li>Мульти-сервер из коробки — автобалансировка клиентов</li>
+        <li>PostgreSQL вместо SQLite — масштабирование без предела</li>
+      </ul>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-rank r2">🥈</div>
+        <div>
+          <div class="comp-name">AmneziaVPN экосистема</div>
+          <div class="comp-sub">amnezia.org — российский протокол, разработан специально против РКН</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:#c9d1d9;margin-bottom:12px">
+        Основное преимущество — протокол AmneziaWG: это WireGuard с обфускацией. Умеет маскироваться под обычный HTTPS-трафик лучше, чем VLESS Reality. Когда РКН начинает агрессивно блокировать — AmneziaWG работает дольше.
+      </p>
+      <p style="font-size:13px;font-weight:600;color:#8b949e;margin-bottom:8px">Что у них есть, чего нет у нас:</p>
+      <ul class="adv-list">
+        <li>Протокол AmneziaWG — тяжелее заблокировать <span class="tag tag-green">ВАЖНО</span></li>
+        <li>Официальные клиенты (iOS, Android, Windows, Mac) от разработчиков</li>
+        <li>Репутация: клиенты доверяют «российскому проекту»</li>
+        <li>Множество протоколов: WireGuard + OpenVPN + AmneziaWG</li>
+      </ul>
+    </div>
+
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-rank r3">🥉</div>
+        <div>
+          <div class="comp-name">Коммерческие VPN-боты</div>
+          <div class="comp-sub">Типа @vpnmarketbot — готовые платные решения от ~3000₽/мес</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:#c9d1d9;margin-bottom:12px">
+        Коммерческие конструкторы VPN-ботов. Платишь за готовое решение — получаешь брендированный бот, панель, оплату, поддержку. Не нужно программировать. Быстрый старт, но постоянные расходы.
+      </p>
+      <p style="font-size:13px;font-weight:600;color:#8b949e;margin-bottom:8px">Что у них есть, чего нет у нас:</p>
+      <ul class="adv-list">
+        <li>Моментальный старт без настройки (5 минут)</li>
+        <li>Все способы оплаты уже подключены</li>
+        <li>Техподдержка включена в стоимость</li>
+        <li>Готовые маркетинговые материалы</li>
+        <li>Встроенная аналитика (воронка, конверсия)</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- БЛОК 2: ИДЕАЛЬНАЯ МОДЕЛЬ -->
+<div class="section" id="ideal">
+  <div class="s-title"><span class="num">2</span> Идеальная модель — что добавляем</div>
+
+  <div class="arch-flow" style="margin-bottom:28px">
+    <div class="arch-block"><div class="emoji">👤</div><div class="name">Клиент</div><div class="tech">Telegram</div></div>
+    <div class="arch-sep">→</div>
+    <div class="arch-block"><div class="emoji">🤖</div><div class="name">Бот</div><div class="tech">python-telegram-bot</div></div>
+    <div class="arch-sep">→</div>
+    <div class="arch-block"><div class="emoji">💳</div><div class="name">Оплата</div><div class="tech">Stars / YooKassa / Crypto</div></div>
+    <div class="arch-sep">→</div>
+    <div class="arch-block"><div class="emoji">⚙️</div><div class="name">Marzban API</div><div class="tech">Создаёт ключ</div></div>
+    <div class="arch-sep">→</div>
+    <div class="arch-block"><div class="emoji">🔑</div><div class="name">VPN-ключ</div><div class="tech">→ клиенту</div></div>
+  </div>
+
+  <div class="ideal-grid">
+    <div class="ideal-card">
+      <div class="ideal-title">✅ Уже есть в нашей системе</div>
+      <ul class="feat">
+        <li>SQLite база данных (платежи не теряются)</li>
+        <li>YooKassa карты + CryptoBot USDT</li>
+        <li>Напоминания за 3д / 1д / 0д / +3д</li>
+        <li>Реферальная система (+7 дней)</li>
+        <li>Пробный период 3 дня</li>
+        <li>Антифрод (rate limit)</li>
+        <li>Кабинет клиента с ключом</li>
+        <li>Nginx + SSL сертификат</li>
+        <li>Watchdog + systemd</li>
+        <li>Admin: /stat, /adddays, /broadcast</li>
+      </ul>
+    </div>
+    <div class="ideal-card new">
+      <div class="ideal-title">🆕 Добавляем в эту версию <span class="badge new2">НОВОЕ</span></div>
+      <ul class="feat">
+        <li class="new3">Telegram Stars — оплата без документов</li>
+        <li class="new3">Промокоды со скидкой %</li>
+        <li class="new3">Трафик клиента в личном кабинете</li>
+        <li class="new3">AmneziaWG как второй протокол</li>
+        <li class="new3">Авто-пост продаж в Telegram-канал</li>
+        <li class="new3">Денежный реферал (₽ на баланс)</li>
+        <li class="new3">Баланс клиента — быстрое пополнение</li>
+        <li class="new3">Авторепост в канал при каждой продаже</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- БЛОК 3: ФИНАНСЫ -->
+<div class="section" id="finance">
+  <div class="s-title"><span class="num">3</span> Реальные финансы — без приукрашивания</div>
+
+  <div class="fin-grid">
+    <div class="fin-box">
+      <h3>💸 Ежемесячные расходы</h3>
+      <div class="fin-row"><span>VPS Hetzner CAX11 (ARM, 4vCPU, 8GB)</span><span class="fin-val red">−380₽</span></div>
+      <div class="fin-row"><span>Домен .ru или .com</span><span class="fin-val red">−60₽</span></div>
+      <div class="fin-row"><span>YooKassa комиссия 3.5% (при 10 000₽ обороте)</span><span class="fin-val red">−350₽</span></div>
+      <div class="fin-row"><span>CryptoBot комиссия 1%</span><span class="fin-val red">−100₽</span></div>
+      <div class="fin-row"><span>Telegram Stars комиссия ~30%</span><span class="fin-val red">−300₽</span></div>
+      <div class="fin-row"><b>Итого при 10 000₽/мес обороте</b><span class="fin-val red">−1 190₽</span></div>
+    </div>
+    <div class="fin-box">
+      <h3>📋 Разовые расходы (старт)</h3>
+      <div class="fin-row"><span>Регистрация ИП (самозанятый)</span><span class="fin-val green">0₽</span></div>
+      <div class="fin-row"><span>Подключение YooKassa (самозанятый)</span><span class="fin-val green">0₽</span></div>
+      <div class="fin-row"><span>Домен на год</span><span class="fin-val red">−700₽</span></div>
+      <div class="fin-row"><span>Первый VPS (первый месяц)</span><span class="fin-val red">−380₽</span></div>
+      <div class="fin-row"><span>Реклама в Telegram-группах (старт)</span><span class="fin-val red">−2 000₽</span></div>
+      <div class="fin-row"><b>Итого на старт</b><span class="fin-val red">−3 080₽</span></div>
+    </div>
+  </div>
+
+  <div class="fin-scenarios">
+    <div class="scenario">
+      <div class="sc-label">Старт (1–2 мес)</div>
+      <div class="sc-users">20 клиентов</div>
+      <div class="sc-revenue">+4 480₽/мес</div>
+      <div class="sc-costs">расходы ~600₽</div>
+      <div class="sc-net">чистая ≈ 3 880₽/мес</div>
+    </div>
+    <div class="scenario best">
+      <div class="sc-label">Рост (3–5 мес)</div>
+      <div class="sc-users">80 клиентов</div>
+      <div class="sc-revenue">+17 920₽/мес</div>
+      <div class="sc-costs">расходы ~1 500₽</div>
+      <div class="sc-net">чистая ≈ 16 400₽/мес</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Масштаб (6+ мес)</div>
+      <div class="sc-users">200 клиентов</div>
+      <div class="sc-revenue">+44 800₽/мес</div>
+      <div class="sc-costs">расходы ~4 000₽</div>
+      <div class="sc-net">чистая ≈ 40 800₽/мес</div>
+    </div>
+  </div>
+
+  <div class="warning-box" style="margin-top:24px">
+    <p><b>⚠️ Честные предупреждения:</b><br>
+    • Средний чек клиента ≈ 224₽/мес (часть берёт 3м и 6м планы)<br>
+    • Churn (отток) реалистично 25–35%/мес — нужно 20–25 новых клиентов чтобы удерживать 80<br>
+    • Первые 20 клиентов — из окружения и Telegram-групп (1–2 месяца)<br>
+    • До 10 000₽/мес чистыми — реально за 3–4 месяца при активном продвижении<br>
+    • Платная реклама в Telegram: ~500–1500₽ за одного платящего клиента — невыгодно до 100+ клиентов</p>
+  </div>
+
+  <div style="background:#161b22;border:1px solid #21262d;border-radius:14px;padding:24px;margin-top:24px">
+    <h3 style="margin-bottom:16px;font-size:16px">📱 Лучший канал привлечения клиентов (бесплатный)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="font-size:14px;color:#c9d1d9;padding:12px;background:#0d1117;border-radius:10px">
+        <b style="color:#3fb950">1. Реферальная система</b><br>
+        Каждый клиент приводит 1–2 человека → геометрический рост
+      </div>
+      <div style="font-size:14px;color:#c9d1d9;padding:12px;background:#0d1117;border-radius:10px">
+        <b style="color:#3fb950">2. Telegram-группы</b><br>
+        Ищи группы «VPN Россия», «Обходим блокировки» — там 50–200к аудитория
+      </div>
+      <div style="font-size:14px;color:#c9d1d9;padding:12px;background:#0d1117;border-radius:10px">
+        <b style="color:#3fb950">3. Свой Telegram-канал</b><br>
+        Публикуй советы по VPN, новости блокировок — органическая аудитория
+      </div>
+      <div style="font-size:14px;color:#c9d1d9;padding:12px;background:#0d1117;border-radius:10px">
+        <b style="color:#3fb950">4. Бесплатный пробник</b><br>
+        3 дня бесплатно → конверсия в платных 15–30%
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- БЛОК 4: УСТАНОВКА -->
+<div class="section" id="install">
+  <div class="s-title"><span class="num">4</span> Пошаговая установка — понятно для всех</div>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc1">1</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-prep">Подготовка</div>
+        <h3>Создай Telegram-бота</h3>
+        <p>В Telegram найди <b>@BotFather</b> → напиши <code>/newbot</code> → придумай имя (например «Мой VPN 🔐») → придумай логин (например <code>myvpn2026_bot</code>) → скопируй <b>токен</b> (выглядит как <code>7234567890:AAH...</code>). Сохрани в заметки.</p>
+        <p>Также узнай свой Telegram ID: найди <b>@userinfobot</b> → нажми Start → скопируй «Id:» число. Это твой ADMIN_ID.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc2">2</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-prep">Подготовка</div>
+        <h3>Купи VPS-сервер</h3>
+        <p>Заходи на <b>hetzner.com</b> → Cloud → Add Server:</p>
+        <p>• Location: <b>Ashburn, VA</b> (США, стабильный) или <b>Falkenstein</b> (Германия)<br>
+        • Image: <b>Ubuntu 22.04</b><br>
+        • Type: <b>CAX11</b> (ARM, 4 vCPU, 8 GB, 20 TB трафика — €3.79/мес ≈ <b>360₽</b>)<br>
+        • SSH Keys: если не знаешь что это — выбери «Password» и придумай пароль root<br>
+        • Нажми «Create &amp; Buy Now»</p>
+        <p>Через 30 секунд в письме придёт <b>IP-адрес</b> сервера. Запиши его (например 5.42.123.45).</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc3">3</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-prep">Подготовка</div>
+        <h3>Подключись к серверу</h3>
+        <p><b>Windows:</b> Скачай <b>MobaXterm</b> (mobaxterm.mobatek.net, бесплатная) → Session → SSH → Remote host = твой IP → OK → вводи пароль root (символы не видны — это нормально).</p>
+        <p><b>Mac/Linux:</b> Открой Терминал → введи:</p>
+        <div class="cmd"><span class="c">ssh root@5.42.123.45</span>  <span class="comment"># вместо 5.42.123.45 — твой IP</span></div>
+        <p>Напечатай пароль → Enter. Ты внутри сервера.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc4">4</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-install">Установка</div>
+        <h3>Скачай и запусти установщик</h3>
+        <p>Скопируй этот блок целиком, вставь в терминал сервера, нажми Enter:</p>
+        <div class="cmd">
+<span class="comment"># Скачиваем проект</span><br>
+<span class="c">git clone https://github.com/irekgai111-lang/vpn-sell /opt/vpn-project 2>/dev/null || \</span><br>
+<span class="c">&nbsp;&nbsp;wget -q -O /tmp/vpn.zip https://github.com/irekgai111-lang/vpn-sell/archive/main.zip &amp;&amp; \</span><br>
+<span class="c">&nbsp;&nbsp;unzip -q /tmp/vpn.zip -d /opt/ &amp;&amp; mv /opt/vpn-sell-main /opt/vpn-project</span><br>
+<br>
+<span class="comment"># Запускаем установщик</span><br>
+<span class="c">cd /opt/vpn-project &amp;&amp; bash install-full.sh</span>
+        </div>
+        <p>Скрипт задаст вопросы: токен бота, твой Telegram ID, домен (необязательно), ключи оплаты. Всё можно ввести сейчас или добавить позже. Установка занимает 5–7 минут.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc5">5</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-config">Настройка</div>
+        <h3>Настрой VLESS Reality в панели Marzban</h3>
+        <p>Открой в браузере: <code>http://ТВОй-IP:8000/dashboard</code><br>
+        Войди с логином <code>admin</code> и паролем из терминала (написан в конце установки).</p>
+        <p>В панели: <b>Хосты (Hosts)</b> → <b>Add Inbound</b> → заполни:</p>
+        <p>• Протокол: <b>VLESS</b><br>
+        • Порт: <b>443</b><br>
+        • Security: <b>Reality</b><br>
+        • Dest: <b>www.microsoft.com:443</b><br>
+        • SNI: <b>www.microsoft.com</b><br>
+        • Нажми «Generate» для Private Key и Short ID<br>
+        • Tag/Name: <b>vless-in</b> (важно — это название используется в боте)</p>
+        <p>Сохрани. Теперь VPN-протокол активен.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc6">6</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-config">Настройка</div>
+        <h3>Подключи Telegram Stars (5 минут, бесплатно)</h3>
+        <p>Это самый простой способ оплаты — клиенты платят звёздами Telegram.</p>
+        <p>В @BotFather → выбери своего бота → <b>Bot Payments</b> → <b>Connect Payments Provider</b> → выбери <b>Telegram Stars</b> → готово.</p>
+        <p>Всё — Stars работает без ИП и без банка. Добавь в конфиг бота:</p>
+        <div class="cmd"><span class="c">nano /opt/vpn-bot/.env</span>  <span class="comment"># добавь строку:</span><br>
+<span class="c">STARS_ENABLED=true</span></div>
+        <p>Перезапусти бота: <code>systemctl restart vpn-bot</code></p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc7">7</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-config">Настройка</div>
+        <h3>Подключи карточную оплату — YooKassa</h3>
+        <p>YooKassa принимает карты, СБП, ЮMoney. Нужно ИП или самозанятость.</p>
+        <p>1. Зарегистрируй самозанятость: <b>npd.nalog.ru</b> (мобильное приложение, 5 минут)<br>
+        2. Регистрация в YooKassa: <b>yookassa.ru</b> → Подключиться → Физ. лицо/самозанятый<br>
+        3. Загрузи паспорт (верификация 1–3 дня)<br>
+        4. В личном кабинете: Интеграция → API → скопируй <b>ShopID</b> и <b>Секретный ключ</b></p>
+        <div class="cmd"><span class="c">nano /opt/vpn-bot/.env</span><br>
+<span class="c">YK_SHOP_ID=123456</span><br>
+<span class="c">YK_SECRET=live_xxxxxxxxxxxxxxxxxxxx</span><br>
+<br>
+<span class="c">systemctl restart vpn-bot</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc8">8</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-config">Настройка</div>
+        <h3>Подключи CryptoBot (криптоплатежи)</h3>
+        <p>В Telegram найди <b>@CryptoBot</b> → Pay → Crypto Pay → Create App → дай название → скопируй API токен.</p>
+        <p>Принимает: USDT, TON, BTC, ETH. Комиссия 1%. Вывод моментально на кошелёк.</p>
+        <div class="cmd"><span class="c">nano /opt/vpn-bot/.env</span><br>
+<span class="c">CRYPTO_TOKEN=токен_из_cryptopay</span><br>
+<br>
+<span class="c">systemctl restart vpn-bot</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc9">9</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-test">Тест</div>
+        <h3>Проверь что всё работает</h3>
+        <p>1. Открой своего бота в Telegram → нажми /start<br>
+        2. Нажми «Попробовать 3 дня бесплатно» → должен прийти VPN-ключ<br>
+        3. Установи Hiddify на телефон → добавь ключ → включи → открой instagram.com<br>
+        4. Попробуй купить платный план через Stars (если настроен)</p>
+        <p>Проверь логи бота если что-то не работает:</p>
+        <div class="cmd"><span class="c">journalctl -u vpn-bot -f -n 50</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-circle sc10">10</div><div class="step-line"></div></div>
+      <div class="step-body">
+        <div class="sc-phase ph-launch">Запуск</div>
+        <h3>Первые клиенты</h3>
+        <p><b>День 1:</b> Поделись ссылкой на бота в своих чатах и историях. Предложи 3 дня бесплатно — конверсия в платных 15–25%.</p>
+        <p><b>День 2–7:</b> Найди Telegram-группы с темой «Россия VPN», «Обходим блокировки», «Новости интернета» → напиши честный пост о своём сервисе (не спам, а полезный контент).</p>
+        <p><b>Рефералы:</b> Попроси первых клиентов поделиться — за каждого они получают +7 дней.</p>
+        <div class="cmd"><span class="comment"># Посмотреть статистику бота в любой момент:</span><br>
+<span class="c">/stat</span>  <span class="comment"># команда прямо в боте</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- БЛОК 5: ЧЕКЛИСТ -->
+<div class="section" id="test">
+  <div class="s-title"><span class="num">5</span> Чеклист проверки — всё ли готово</div>
+
+  <div class="checklist">
+    <div class="check-item done"><div class="chk">✓</div><span>VPS сервер куплен и запущен (Ubuntu 22.04)</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>SSH-подключение к серверу работает</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>install-full.sh выполнен без ошибок</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>Marzban панель открывается: http://IP:8000/dashboard</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>VLESS Reality inbound создан с тегом «vless-in»</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>Бот отвечает в Telegram на /start</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>Пробный период выдаёт VPN-ключ автоматически</span></div>
+    <div class="check-item done"><div class="chk">✓</div><span>VPN-ключ работает в Hiddify (открывает Instagram)</span></div>
+    <div class="check-item todo"><div class="chk"></div><span>Telegram Stars подключён через @BotFather</span></div>
+    <div class="check-item todo"><div class="chk"></div><span>YooKassa зарегистрирована, ключи в .env</span></div>
+    <div class="check-item todo"><div class="chk"></div><span>CryptoBot токен добавлен в .env</span></div>
+    <div class="check-item todo"><div class="chk"></div><span>Тестовая покупка через Stars прошла успешно</span></div>
+    <div class="check-item todo"><div class="chk"></div><span>Ссылка на бота опубликована в 3+ группах/каналах</span></div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#0d2d1a,#161b22);border:1px solid #2ea043;border-radius:14px;padding:28px;margin-top:32px;text-align:center">
+    <div style="font-size:28px;margin-bottom:10px">🚀</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:10px">Готов к запуску!</div>
+    <p style="color:#8b949e;font-size:14px;max-width:480px;margin:0 auto">Если все пункты выполнены — твой VPN-бизнес на автопилоте. Клиенты заходят, платят, получают ключ. Ты получаешь уведомление в Telegram о каждой продаже.</p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>

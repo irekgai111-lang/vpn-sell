@@ -58,6 +58,19 @@ def init():
             tg_id        INTEGER PRIMARY KEY,
             last_invoice TEXT
         );
+        CREATE TABLE IF NOT EXISTS promo_codes (
+            code         TEXT    PRIMARY KEY,
+            discount_pct INTEGER DEFAULT 0,
+            uses_left    INTEGER DEFAULT -1,
+            expires_at   TEXT,
+            created_at   TEXT    DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS promo_uses (
+            code    TEXT    NOT NULL,
+            tg_id   INTEGER NOT NULL,
+            used_at TEXT    DEFAULT (datetime('now')),
+            UNIQUE(code, tg_id)
+        );
         """)
 
 
@@ -286,3 +299,43 @@ def touch_rate(tg_id: int):
             INSERT INTO rate_limits(tg_id, last_invoice) VALUES(?, datetime('now'))
             ON CONFLICT(tg_id) DO UPDATE SET last_invoice=datetime('now')
         """, (tg_id,))
+
+
+# ─── Промокоды ───────────────────────────────────────────────────────────────
+
+def check_promo(code: str, tg_id: int) -> dict | None:
+    """Проверяет промокод. Возвращает {discount_pct} или None если не действителен."""
+    with _conn() as db:
+        row = db.execute("""
+            SELECT * FROM promo_codes
+            WHERE code=? AND (uses_left > 0 OR uses_left = -1)
+            AND (expires_at IS NULL OR expires_at > datetime('now'))
+        """, (code.upper(),)).fetchone()
+        if not row:
+            return None
+        used = db.execute(
+            "SELECT 1 FROM promo_uses WHERE code=? AND tg_id=?", (code.upper(), tg_id)
+        ).fetchone()
+        if used:
+            return None
+        return dict(row)
+
+
+def apply_promo(code: str, tg_id: int):
+    """Фиксирует использование промокода."""
+    with _conn() as db:
+        db.execute("INSERT OR IGNORE INTO promo_uses(code, tg_id) VALUES(?,?)", (code.upper(), tg_id))
+        db.execute("""
+            UPDATE promo_codes SET uses_left = uses_left - 1
+            WHERE code=? AND uses_left > 0
+        """, (code.upper(),))
+
+
+def create_promo(code: str, discount_pct: int, uses: int = -1, days: int = None):
+    """Создаёт промокод. uses=-1 = безлимитный."""
+    expires = (datetime.utcnow() + timedelta(days=days)).isoformat() if days else None
+    with _conn() as db:
+        db.execute("""
+            INSERT OR REPLACE INTO promo_codes(code, discount_pct, uses_left, expires_at)
+            VALUES(?, ?, ?, ?)
+        """, (code.upper(), discount_pct, uses, expires))
