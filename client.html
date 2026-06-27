@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPN без блокировок — быстро, безопасно, без ограничений</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #07090f;
+  --bg2:   #0b0e18;
+  --bg3:   #10141f;
+  --blue:  #4f8fff;
+  --cyan:  #00d4ff;
+  --green: #00e57a;
+  --gold:  #ffb800;
+  --red:   #ff4d6d;
+  --text:  #e6ecf8;
+  --muted: #6b7899;
+  --bdr:   rgba(79,143,255,.13);
+  --glow:  0 0 40px rgba(79,143,255,.18);
+  --fh: 'Syne', sans-serif;
+  --fb: 'Plus Jakarta Sans', sans-serif;
+  --fm: 'JetBrains Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden}
+
+/* dots background */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(rgba(79,143,255,.07) 1px,transparent 1px);
+  background-size:32px 32px;pointer-events:none;z-index:0
+}
+/* top glow */
+body::after{
+  content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);
+  width:900px;height:500px;
+  background:radial-gradient(ellipse,rgba(79,143,255,.07) 0%,transparent 65%);
+  pointer-events:none;z-index:0
+}
+
+.z{position:relative;z-index:1}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:14px 0;
+  background:rgba(7,9,15,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bdr)
+}
+.nav-inner{max-width:1060px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-family:var(--fh);font-weight:800;font-size:20px;letter-spacing:-1px;color:var(--blue)}
+.logo em{font-style:normal;color:var(--cyan)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+@media(max-width:640px){.nav-links{display:none}}
+.nav-cta{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;font-weight:700;font-size:14px;
+  padding:10px 24px;border-radius:8px;text-decoration:none;
+  transition:all .25s;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(79,143,255,.3)
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,143,255,.45)}
+
+/* ─── HERO ─── */
+.hero{padding:144px 0 80px;text-align:center;position:relative}
+.trial-pill{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(0,229,122,.07);border:1px solid rgba(0,229,122,.2);
+  border-radius:100px;padding:8px 20px;
+  font-size:14px;font-weight:600;color:var(--green);
+  margin-bottom:32px;cursor:pointer;text-decoration:none;
+  transition:all .25s
+}
+.trial-pill:hover{background:rgba(0,229,122,.14);transform:translateY(-1px)}
+.trial-pill::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--green);
+  animation:blink 1.6s ease-in-out infinite
+}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,122,.4)}50%{opacity:.5;box-shadow:0 0 0 6px rgba(0,229,122,0)}}
+
+h1{
+  font-family:var(--fh);font-size:clamp(38px,6.5vw,76px);
+  font-weight:800;line-height:1.04;letter-spacing:-2.5px;
+  margin-bottom:24px
+}
+h1 .acc{
+  background:linear-gradient(120deg,var(--blue),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.hero-p{
+  font-size:19px;color:var(--muted);max-width:500px;
+  margin:0 auto 48px;font-weight:300;line-height:1.75
+}
+.hero-p b{color:var(--text);font-weight:500}
+
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:72px}
+.btn-tg{
+  background:linear-gradient(135deg,#2BA5DC,#1A8AB5);
+  color:#fff;font-weight:700;font-size:16px;
+  padding:18px 40px;border-radius:10px;text-decoration:none;
+  display:flex;align-items:center;gap:10px;
+  transition:all .25s;box-shadow:0 6px 30px rgba(43,165,220,.35)
+}
+.btn-tg:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(43,165,220,.5)}
+.btn-outline{
+  border:1px solid var(--bdr);color:var(--text);
+  font-weight:500;font-size:16px;padding:18px 36px;
+  border-radius:10px;text-decoration:none;
+  background:rgba(255,255,255,.02);transition:all .25s
+}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+
+/* hero badges */
+.hero-badges{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+.hb{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:20px 32px;
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:14px;
+  transition:border-color .2s
+}
+.hb:hover{border-color:rgba(79,143,255,.3)}
+.hb-num{font-family:var(--fh);font-size:30px;font-weight:800;color:var(--blue);letter-spacing:-1px}
+.hb-txt{font-size:12px;color:var(--muted)}
+
+/* ─── PLANS ─── */
+#plans{padding:100px 0}
+.s-label{font-family:var(--fm);font-size:11px;color:var(--blue);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+h2{font-family:var(--fh);font-size:clamp(26px,4vw,44px);font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:12px}
+.s-sub{font-size:17px;color:var(--muted);max-width:480px;font-weight:300}
+.s-head{margin-bottom:52px}
+
+.plans-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px
+}
+@media(max-width:900px){.plans-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.plans-grid{grid-template-columns:1fr}}
+
+.plan-card{
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:18px;padding:28px 24px;
+  display:flex;flex-direction:column;
+  transition:all .3s;position:relative;overflow:hidden
+}
+.plan-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  opacity:0;transition:opacity .3s
+}
+.plan-card:hover{border-color:rgba(79,143,255,.35);transform:translateY(-6px);box-shadow:var(--glow)}
+.plan-card:hover::before{opacity:1}
+.plan-card.pop{
+  border-color:var(--blue);
+  background:linear-gradient(160deg,rgba(79,143,255,.07) 0%,var(--bg3) 100%);
+  box-shadow:var(--glow)
+}
+.plan-card.pop::before{opacity:1}
+
+.pop-badge{
+  position:absolute;top:16px;right:16px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;font-size:11px;font-weight:700;
+  padding:4px 12px;border-radius:100px;letter-spacing:.5px
+}
+.plan-trial-badge{
+  position:absolute;top:16px;right:16px;
+  background:rgba(0,229,122,.15);border:1px solid rgba(0,229,122,.3);
+  color:var(--green);font-size:11px;font-weight:700;
+  padding:4px 12px;border-radius:100px
+}
+
+.plan-period{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:16px}
+.plan-price{font-family:var(--fh);font-size:40px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:4px}
+.plan-price sup{font-size:18px;font-weight:600;vertical-align:super}
+.plan-price.free{color:var(--green)}
+.plan-old{font-size:13px;color:var(--red);text-decoration:line-through;opacity:.7;margin-bottom:16px;height:18px}
+.plan-pm{font-size:13px;color:var(--muted);margin-bottom:24px}
+.plan-sep{height:1px;background:rgba(255,255,255,.05);margin-bottom:20px}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:9px;flex:1}
+.plan-feats li{font-size:13px;display:flex;align-items:center;gap:9px;color:var(--muted)}
+.plan-feats li.on{color:var(--text)}
+.plan-feats li::before{
+  content:'';width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  background:rgba(0,229,122,.1);border:1px solid rgba(0,229,122,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px
+}
+.plan-feats li.on::before{
+  content:'✓';color:var(--green);
+  background:rgba(0,229,122,.12);border-color:rgba(0,229,122,.3);
+  display:inline-flex;align-items:center;justify-content:center
+}
+.plan-feats li.off::before{
+  content:'—';color:var(--muted);
+  background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06);
+  display:inline-flex;align-items:center;justify-content:center
+}
+.plan-cta{
+  margin-top:24px;
+  background:rgba(79,143,255,.1);border:1px solid rgba(79,143,255,.2);
+  color:var(--blue);font-weight:700;font-size:14px;
+  padding:12px;border-radius:9px;text-decoration:none;
+  text-align:center;display:block;transition:all .25s
+}
+.plan-cta:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.plan-card.pop .plan-cta{background:var(--blue);color:#fff;border-color:var(--blue)}
+.plan-card.pop .plan-cta:hover{background:var(--cyan);border-color:var(--cyan)}
+.plan-card.trial .plan-cta{background:rgba(0,229,122,.1);border-color:rgba(0,229,122,.25);color:var(--green)}
+.plan-card.trial .plan-cta:hover{background:var(--green);color:#000;border-color:var(--green)}
+
+.plans-note{margin-top:20px;text-align:center;font-size:13px;color:var(--muted)}
+.plans-note b{color:var(--text)}
+
+/* ─── WHY ─── */
+#why{background:var(--bg2);padding:100px 0}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--bdr);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
+@media(max-width:700px){.why-grid{grid-template-columns:1fr}}
+.why-card{background:var(--bg2);padding:36px 30px;transition:background .2s}
+.why-card:hover{background:var(--bg3)}
+.why-icon{font-size:32px;margin-bottom:16px}
+.why-title{font-family:var(--fh);font-weight:700;font-size:17px;margin-bottom:10px;letter-spacing:-.3px}
+.why-desc{font-size:14px;color:var(--muted);line-height:1.75}
+
+/* ─── DEVICES ─── */
+#devices{padding:100px 0}
+.dev-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:860px){.dev-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.dev-grid{grid-template-columns:repeat(2,1fr)}}
+.dev-card{
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:14px;padding:24px 16px;
+  text-align:center;text-decoration:none;color:var(--text);
+  transition:all .25s;display:block
+}
+.dev-card:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:var(--glow)}
+.dev-icon{font-size:36px;margin-bottom:10px}
+.dev-name{font-family:var(--fh);font-weight:700;font-size:15px;margin-bottom:4px}
+.dev-app{font-size:11px;color:var(--muted);margin-bottom:12px}
+.dev-dl{
+  font-size:11px;font-weight:600;
+  padding:5px 14px;border-radius:6px;
+  background:rgba(79,143,255,.1);border:1px solid rgba(79,143,255,.2);
+  color:var(--blue);display:inline-block;transition:all .2s
+}
+.dev-card:hover .dev-dl{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.install-strip{
+  margin-top:28px;
+  background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(79,143,255,.05));
+  border:1px solid var(--bdr);border-radius:14px;
+  padding:28px 32px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap
+}
+.install-strip h3{font-family:var(--fh);font-weight:700;font-size:18px;margin-bottom:4px}
+.install-strip p{font-size:14px;color:var(--muted)}
+.btn-install{
+  background:var(--cyan);color:#000;font-weight:700;font-size:14px;
+  padding:12px 28px;border-radius:8px;text-decoration:none;
+  white-space:nowrap;transition:all .2s
+}
+.btn-install:hover{background:#fff;transform:translateY(-2px)}
+
+/* ─── REFERRAL ─── */
+#ref{background:var(--bg2);padding:100px 0}
+.ref-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center}
+@media(max-width:768px){.ref-grid{grid-template-columns:1fr}}
+.ref-steps{display:flex;flex-direction:column;gap:28px}
+.ref-step{display:flex;gap:18px;align-items:flex-start}
+.rs-num{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:rgba(79,143,255,.1);border:1px solid rgba(79,143,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:13px;font-weight:600;color:var(--blue)
+}
+.rs-text h4{font-family:var(--fh);font-weight:700;font-size:16px;margin-bottom:5px}
+.rs-text p{color:var(--muted);font-size:14px;line-height:1.65}
+
+.ref-prize{
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:22px;padding:52px 40px;text-align:center;
+  position:relative;overflow:hidden
+}
+.ref-prize::after{
+  content:'';position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(0,229,122,.08) 0%,transparent 70%)
+}
+.prize-emoji{font-size:60px;display:block;margin-bottom:20px}
+.prize-num{
+  font-family:var(--fh);font-size:72px;font-weight:800;
+  color:var(--green);letter-spacing:-4px;line-height:1
+}
+.prize-unit{font-size:26px;font-weight:600;vertical-align:middle}
+.prize-label{font-size:16px;color:var(--muted);margin:10px 0 28px;line-height:1.5}
+.prize-list{
+  text-align:left;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);
+  border-radius:10px;padding:16px 20px;
+  font-size:13px;line-height:2;color:var(--muted)
+}
+.prize-list span{color:var(--green)}
+
+/* ─── HOW ─── */
+#how{padding:100px 0}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+@media(max-width:768px){.how-grid{grid-template-columns:1fr}}
+.flow{display:flex;flex-direction:column;position:relative}
+.flow::before{
+  content:'';position:absolute;left:20px;top:22px;bottom:22px;
+  width:1px;background:linear-gradient(to bottom,var(--blue),transparent)
+}
+.fl-step{display:flex;gap:24px;padding:22px 0;align-items:flex-start}
+.fl-dot{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  border:2px solid var(--blue);background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:12px;font-weight:600;color:var(--blue);
+  position:relative;z-index:1
+}
+.fl-text{padding-top:8px}
+.fl-text h4{font-family:var(--fh);font-weight:700;font-size:17px;margin-bottom:6px}
+.fl-text p{color:var(--muted);font-size:14px;line-height:1.7}
+.fl-code{
+  font-family:var(--fm);font-size:12px;
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:6px;padding:8px 14px;margin-top:10px;
+  color:var(--cyan);display:inline-block
+}
+
+/* connection viz */
+.conn-viz{
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:18px;overflow:hidden
+}
+.viz-bar{
+  background:var(--bg);padding:12px 18px;
+  display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--bdr)
+}
+.viz-dot{width:9px;height:9px;border-radius:50%}
+.viz-body{padding:28px 24px;font-family:var(--fm);font-size:12px;line-height:2.1}
+.vc{color:var(--cyan)}
+.vg{color:var(--green)}
+.vm{color:var(--muted)}
+.vt{color:var(--text)}
+.conn-status{
+  margin-top:16px;padding:14px 18px;
+  background:rgba(0,229,122,.06);border:1px solid rgba(0,229,122,.15);
+  border-radius:10px;display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--green);font-weight:500
+}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.6s infinite}
+
+/* ─── FAQ ─── */
+#faq{background:var(--bg2);padding:100px 0}
+.faq-list{display:flex;flex-direction:column;gap:2px}
+.fi{
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:10px;overflow:hidden;transition:border-color .2s
+}
+.fi:hover{border-color:rgba(79,143,255,.25)}
+.fi-q{
+  width:100%;padding:20px 26px;background:none;border:none;
+  color:var(--text);font-family:var(--fb);font-size:15px;font-weight:500;
+  text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px
+}
+.fi-arr{color:var(--blue);font-size:18px;flex-shrink:0;transition:transform .3s}
+.fi.open .fi-arr{transform:rotate(45deg)}
+.fi-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.fi.open .fi-a{max-height:250px}
+.fi-a-in{padding:0 26px 20px;color:var(--muted);font-size:14px;line-height:1.8}
+.fi-a-in code{
+  font-family:var(--fm);font-size:12px;
+  background:var(--bg);padding:2px 8px;border-radius:4px;color:var(--cyan)
+}
+
+/* ─── CTA ─── */
+.final-cta{
+  padding:120px 0;text-align:center;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  position:relative;overflow:hidden
+}
+.final-cta::before{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:700px;height:400px;
+  background:radial-gradient(ellipse,rgba(79,143,255,.07) 0%,transparent 70%);
+  pointer-events:none
+}
+.final-cta h2{font-size:clamp(30px,5vw,52px);margin-bottom:16px}
+.final-cta p{color:var(--muted);font-size:18px;margin-bottom:44px;font-weight:300}
+
+/* ─── PRIVACY MODAL ─── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);
+  backdrop-filter:blur(10px);z-index:999;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .3s
+}
+.overlay.on{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg2);border:1px solid var(--bdr);border-radius:20px;
+  max-width:660px;width:100%;max-height:80vh;overflow-y:auto;
+  padding:44px;position:relative;
+  transform:scale(.95) translateY(16px);transition:transform .3s
+}
+.overlay.on .modal{transform:scale(1) translateY(0)}
+.m-close{
+  position:absolute;top:18px;right:18px;
+  width:34px;height:34px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--bdr);
+  color:var(--muted);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s
+}
+.m-close:hover{border-color:var(--blue);color:var(--blue)}
+.modal h3{font-family:var(--fh);font-size:22px;font-weight:800;margin-bottom:24px}
+.modal h4{
+  font-family:var(--fh);font-size:12px;font-weight:700;
+  color:var(--blue);text-transform:uppercase;letter-spacing:1px;
+  margin:20px 0 8px
+}
+.modal p{font-size:13px;color:var(--muted);line-height:1.85;margin-bottom:6px}
+
+/* ─── FOOTER ─── */
+footer{
+  padding:36px 0;border-top:1px solid var(--bdr);
+  text-align:center
+}
+.foot-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.fl-a{
+  font-size:13px;color:var(--muted);text-decoration:none;
+  cursor:pointer;transition:color .2s
+}
+.fl-a:hover{color:var(--blue)}
+footer p{font-size:12px;color:var(--muted)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .65s ease both}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}.d4{animation-delay:.4s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">FAST<em>VPN</em></div>
+    <div class="nav-links">
+      <a href="#plans">Тарифы</a>
+      <a href="#why">Почему мы</a>
+      <a href="#devices">Устройства</a>
+      <a href="#ref">Рефералы</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="https://t.me/YOUR_BOT" target="_blank" class="nav-cta">Подключиться →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero z">
+  <div class="wrap">
+    <a href="https://t.me/YOUR_BOT" target="_blank" class="trial-pill fu">
+      🎁 3 дня бесплатно — попробуй прямо сейчас
+    </a>
+    <h1 class="fu d1">
+      VPN без<br><span class="acc">блокировок</span><br>и слежки
+    </h1>
+    <p class="hero-p fu d2">
+      Открывай Instagram, YouTube и любые сайты.<br>
+      <b>Протокол Reality</b> — не блокируется Роскомнадзором.
+    </p>
+    <div class="hero-btns fu d3">
+      <a href="https://t.me/YOUR_BOT" target="_blank" class="btn-tg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.03 9.57c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.893.651z"/></svg>
+        Подключиться в Telegram
+      </a>
+      <a href="#plans" class="btn-outline">Посмотреть тарифы</a>
+    </div>
+    <div class="hero-badges fu d4">
+      <div class="hb">
+        <div class="hb-num">250₽</div>
+        <div class="hb-txt">от / месяц</div>
+      </div>
+      <div class="hb">
+        <div class="hb-num">5</div>
+        <div class="hb-txt">устройств</div>
+      </div>
+      <div class="hb">
+        <div class="hb-num">24/7</div>
+        <div class="hb-txt">работает</div>
+      </div>
+      <div class="hb">
+        <div class="hb-num">10с</div>
+        <div class="hb-txt">получить ключ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="plans" class="z">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-label">Тарифы</div>
+      <h2>Выбери свой план</h2>
+      <p class="s-sub">Оплата картой, СБП, криптовалютой или Telegram Stars.</p>
+    </div>
+    <div class="plans-grid">
+
+      <!-- Trial -->
+      <div class="plan-card trial">
+        <div class="plan-trial-badge">БЕСПЛАТНО</div>
+        <div class="plan-period">Пробный</div>
+        <div class="plan-price free">0₽</div>
+        <div class="plan-old">&nbsp;</div>
+        <div class="plan-pm">3 дня · 5 ГБ трафика</div>
+        <div class="plan-sep"></div>
+        <ul class="plan-feats">
+          <li class="on">3 дня доступа</li>
+          <li class="on">5 ГБ трафика</li>
+          <li class="on">Все устройства</li>
+          <li class="off">Без лимита трафика</li>
+          <li class="off">Приоритет скорости</li>
+        </ul>
+        <a href="https://t.me/YOUR_BOT" target="_blank" class="plan-cta">Попробовать →</a>
+      </div>
+
+      <!-- 1 month -->
+      <div class="plan-card">
+        <div class="plan-period">1 месяц</div>
+        <div class="plan-price"><sup>₽</sup>250</div>
+        <div class="plan-old">350₽</div>
+        <div class="plan-pm">~8₽ в день</div>
+        <div class="plan-sep"></div>
+        <ul class="plan-feats">
+          <li class="on">30 дней</li>
+          <li class="on">100 ГБ трафика</li>
+          <li class="on">Все устройства</li>
+          <li class="off">Лучшая цена/мес</li>
+          <li class="off">Приоритет скорости</li>
+        </ul>
+        <a href="https://t.me/YOUR_BOT" target="_blank" class="plan-cta">Выбрать →</a>
+      </div>
+
+      <!-- 3 months — popular -->
+      <div class="plan-card pop">
+        <div class="pop-badge">⭐ ХИТ</div>
+        <div class="plan-period">3 месяца</div>
+        <div class="plan-price"><sup>₽</sup>599</div>
+        <div class="plan-old">750₽</div>
+        <div class="plan-pm">~200₽ / мес — экономия 20%</div>
+        <div class="plan-sep"></div>
+        <ul class="plan-feats">
+          <li class="on">90 дней</li>
+          <li class="on">300 ГБ трафика</li>
+          <li class="on">Все устройства</li>
+          <li class="on">Лучшая цена/мес</li>
+          <li class="off">Безлимит трафика</li>
+        </ul>
+        <a href="https://t.me/YOUR_BOT" target="_blank" class="plan-cta">Выбрать →</a>
+      </div>
+
+      <!-- 1 year -->
+      <div class="plan-card">
+        <div class="plan-period">1 год</div>
+        <div class="plan-price"><sup>₽</sup>1699</div>
+        <div class="plan-old">3000₽</div>
+        <div class="plan-pm">~142₽ / мес — экономия 43%</div>
+        <div class="plan-sep"></div>
+        <ul class="plan-feats">
+          <li class="on">365 дней</li>
+          <li class="on">Безлимит трафика</li>
+          <li class="on">Все устройства</li>
+          <li class="on">Лучшая цена/мес</li>
+          <li class="on">🏆 Максимальная выгода</li>
+        </ul>
+        <a href="https://t.me/YOUR_BOT" target="_blank" class="plan-cta">Выбрать →</a>
+      </div>
+    </div>
+    <div class="plans-note">
+      <b>Как оплатить:</b> карта / СБП · USDT / TON · Telegram Stars — выбираешь сам при оформлении
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why" class="z">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-label">Почему мы</div>
+      <h2>Работает там, где<br>другие падают</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">⚡</div>
+        <div class="why-title">Протокол VLESS Reality</div>
+        <div class="why-desc">Маскируется под Microsoft.com. Роскомнадзор не может заблокировать его без отключения тысяч легитимных сервисов.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🔐</div>
+        <div class="why-title">Никаких логов</div>
+        <div class="why-desc">Мы не записываем что ты смотришь, куда заходишь и что скачиваешь. Только статистика трафика для контроля лимита.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🚀</div>
+        <div class="why-title">Скорость до 1 Гбит/с</div>
+        <div class="why-desc">Серверы в Европе с прямыми каналами. Видео в 4K, звонки без задержек, игры без лагов — всё работает быстро.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📱</div>
+        <div class="why-title">Все платформы</div>
+        <div class="why-desc">iPhone, Android, Mac, Windows, Linux — одна подписка. До 5 устройств одновременно. Приложение Hiddify бесплатное.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">⏱️</div>
+        <div class="why-title">Ключ за 10 секунд</div>
+        <div class="why-desc">Оплатил → бот прислал ключ → вставил в приложение → подключился. Никаких подтверждений и ожиданий.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">💬</div>
+        <div class="why-title">Поддержка в Telegram</div>
+        <div class="why-desc">Написал боту /help — получил ответ. Не работает — напишем, разберёмся, подключим. Работаем 24/7.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEVICES -->
+<section id="devices" class="z">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-label">Устройства</div>
+      <h2>Работает на всём</h2>
+      <p class="s-sub">Скачай Hiddify — бесплатное приложение для всех платформ.</p>
+    </div>
+    <div class="dev-grid">
+      <a class="dev-card" href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777056" target="_blank" rel="noopener">
+        <div class="dev-icon">📱</div>
+        <div class="dev-name">iPhone</div>
+        <div class="dev-app">iOS 16+</div>
+        <span class="dev-dl">App Store</span>
+      </a>
+      <a class="dev-card" href="https://apps.apple.com/us/app/hiddify-proxy-vpn/id6596777056" target="_blank" rel="noopener">
+        <div class="dev-icon">📟</div>
+        <div class="dev-name">iPad</div>
+        <div class="dev-app">iPadOS 16+</div>
+        <span class="dev-dl">App Store</span>
+      </a>
+      <a class="dev-card" href="https://play.google.com/store/apps/details?id=app.hiddify.com" target="_blank" rel="noopener">
+        <div class="dev-icon">🤖</div>
+        <div class="dev-name">Android</div>
+        <div class="dev-app">Android 5+</div>
+        <span class="dev-dl">Google Play</span>
+      </a>
+      <a class="dev-card" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">
+        <div class="dev-icon">🍎</div>
+        <div class="dev-name">Mac</div>
+        <div class="dev-app">macOS 12+</div>
+        <span class="dev-dl">Скачать</span>
+      </a>
+      <a class="dev-card" href="https://github.com/hiddify/hiddify-app/releases/latest" target="_blank" rel="noopener">
+        <div class="dev-icon">🪟</div>
+        <div class="dev-name">Windows</div>
+        <div class="dev-app">Win 10 / 11</div>
+        <span class="dev-dl">Скачать</span>
+      </a>
+    </div>
+    <div class="install-strip">
+      <div>
+        <h3>Как установить и подключиться</h3>
+        <p>Пошаговая инструкция со скриншотами — 3 минуты и готово</p>
+      </div>
+      <a href="#" onclick="openGuide();return false" class="btn-install">Открыть инструкцию →</a>
+    </div>
+  </div>
+</section>
+
+<!-- REFERRAL -->
+<section id="ref" class="z">
+  <div class="wrap">
+    <div class="ref-grid">
+      <div>
+        <div class="s-label">Реферальная программа</div>
+        <h2>Приведи друга —<br>получи 2 недели</h2>
+        <p class="s-sub" style="margin-bottom:44px">За каждого друга, который купит подписку — ты получаешь +14 дней автоматически.</p>
+        <div class="ref-steps">
+          <div class="ref-step">
+            <div class="rs-num">1</div>
+            <div class="rs-text">
+              <h4>Получи свою ссылку</h4>
+              <p>Напиши боту <code style="font-family:var(--fm);font-size:12px;background:var(--bg3);padding:2px 8px;border-radius:4px;color:var(--cyan)">/ref</code> — он пришлёт личную ссылку с твоим ID.</p>
+            </div>
+          </div>
+          <div class="ref-step">
+            <div class="rs-num">2</div>
+            <div class="rs-text">
+              <h4>Поделись с друзьями</h4>
+              <p>Отправь ссылку в чат, сторис, в ВК — куда удобно. Друг переходит и регистрируется.</p>
+            </div>
+          </div>
+          <div class="ref-step">
+            <div class="rs-num">3</div>
+            <div class="rs-text">
+              <h4>Бонус приходит сам</h4>
+              <p>Как только друг совершит первую оплату — тебе мгновенно начислятся 14 дней. Без заявок и ожиданий.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ref-prize">
+        <span class="prize-emoji">🎁</span>
+        <div class="prize-num">14<span class="prize-unit"> дней</span></div>
+        <p class="prize-label">бесплатной подписки<br>за каждого приглашённого</p>
+        <div class="prize-list">
+          <span>✓</span> Начисляется мгновенно<br>
+          <span>✓</span> Без ограничений по количеству<br>
+          <span>✓</span> Дни накапливаются<br>
+          <span>✓</span> Приглашай сколько угодно
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW WORKS -->
+<section id="how" class="z">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-label">Как подключиться</div>
+      <h2>Три шага до<br>первого соединения</h2>
+    </div>
+    <div class="how-grid">
+      <div class="flow">
+        <div class="fl-step">
+          <div class="fl-dot">01</div>
+          <div class="fl-text">
+            <h4>Открой бота и выбери план</h4>
+            <p>Нажми «/start» в Telegram-боте, выбери тариф и способ оплаты. Карта, СБП, крипта или Stars.</p>
+            <div class="fl-code">t.me/YOUR_BOT → /start</div>
+          </div>
+        </div>
+        <div class="fl-step">
+          <div class="fl-dot">02</div>
+          <div class="fl-text">
+            <h4>Получи VPN-ключ</h4>
+            <p>После оплаты — бот пришлёт ключ вида <code style="font-family:var(--fm);font-size:11px;color:var(--cyan)">vless://...</code> за 10 секунд. Скопируй его.</p>
+          </div>
+        </div>
+        <div class="fl-step">
+          <div class="fl-dot">03</div>
+          <div class="fl-text">
+            <h4>Вставь в Hiddify и подключись</h4>
+            <p>Скачай приложение Hiddify, вставь ключ → нажми «Подключить». Готово — интернет свободен.</p>
+          </div>
+        </div>
+      </div>
+      <div class="conn-viz">
+        <div class="viz-bar">
+          <div class="viz-dot" style="background:#ff4d6d"></div>
+          <div class="viz-dot" style="background:#ffb800"></div>
+          <div class="viz-dot" style="background:#00e57a"></div>
+          <span style="font-family:var(--fm);font-size:11px;color:var(--muted);margin-left:10px">Hiddify — connected</span>
+        </div>
+        <div class="viz-body">
+          <div class="vm">Profile loaded:</div>
+          <div class="vc">  server: eu-server.example.com:443</div>
+          <div class="vc">  protocol: VLESS + Reality</div>
+          <div class="vc">  flow: xtls-rprx-vision</div>
+          <div class="vm" style="margin-top:8px">Connecting...</div>
+          <div class="vg">  ✓ TLS handshake OK</div>
+          <div class="vg">  ✓ Reality fingerprint matched</div>
+          <div class="vg">  ✓ Tunnel established</div>
+          <div class="conn-status">
+            <div class="conn-dot"></div>
+            Подключено · Пинг 32мс · ↑ 12мс ↓ 94 Мбит/с
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="z">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-label">FAQ</div>
+      <h2>Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <div class="fi open">
+        <button class="fi-q" onclick="faq(this)">Это законно?<span class="fi-arr">+</span></button>
+        <div class="fi-a"><div class="fi-a-in">Использование VPN для личных целей — закона, запрещающего это в России, нет. Десятки миллионов россиян пользуются VPN ежедневно. Мы не занимаемся нелегальной деятельностью и не помогаем ей.</div></div>
+      </div>
+      <div class="fi">
+        <button class="fi-q" onclick="faq(this)">Как это не блокируется?<span class="fi-arr">+</span></button>
+        <div class="fi-a"><div class="fi-a-in">Используем протокол VLESS Reality — он притворяется обычным HTTPS-сайтом (microsoft.com). Роскомнадзор не может отличить наш трафик от легитимного корпоративного. Именно поэтому его используют крупные VPN-сервисы в России.</div></div>
+      </div>
+      <div class="fi">
+        <button class="fi-q" onclick="faq(this)">Что значит «5 устройств»?<span class="fi-arr">+</span></button>
+        <div class="fi-a"><div class="fi-a-in">Одна подписка — один VPN-ключ. Ключ можно добавить в приложение Hiddify сразу на телефоне, планшете, ноутбуке — до 5 устройств одновременно без доплат.</div></div>
+      </div>
+      <div class="fi">
+        <button class="fi-q" onclick="faq(this)">Как продлить подписку?<span class="fi-arr">+</span></button>
+        <div class="fi-a"><div class="fi-a-in">Бот напомнит за 3 дня и за 1 день до окончания. Откроешь — нажмёшь «Продлить» — оплатишь. Дни добавятся к текущей дате истечения, ключ останется тот же.</div></div>
+      </div>
+      <div class="fi">
+        <button class="fi-q" onclick="faq(this)">Что если не работает?<span class="fi-arr">+</span></button>
+        <div class="fi-a"><div class="fi-a-in">Напиши боту <code>/help</code> или кнопку «Поддержка» в меню. Чаще всего помогает: переустановить ключ, выбрать другой сервер в Hiddify, проверить что подписка не истекла (<code>/mysub</code>).</div></div>
+      </div>
+      <div class="fi">
+        <button class="fi-q" onclick="faq(this)">Есть ли возврат денег?<span class="fi-arr">+</span></button>
+        <div class="fi-a"><div class="fi-a-in">Да. Если VPN не работает и мы не смогли помочь в течение 24 часов — вернём деньги за неиспользованный период. Напиши в поддержку.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta z">
+  <div class="wrap">
+    <div class="s-label" style="margin-bottom:16px">Начни прямо сейчас</div>
+    <h2>3 дня бесплатно —<br>без карты, без регистрации</h2>
+    <p>Открой бота, нажми «Старт» — и через 10 секунд VPN у тебя в телефоне.</p>
+    <a href="https://t.me/YOUR_BOT" target="_blank" class="btn-tg" style="display:inline-flex;margin:0 auto">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.03 9.57c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.893.651z"/></svg>
+      Попробовать бесплатно
+    </a>
+  </div>
+</section>
+
+<!-- INSTALL GUIDE MODAL -->
+<div class="overlay" id="guideM" onclick="if(event.target===this)closeGuide()">
+  <div class="modal">
+    <button class="m-close" onclick="closeGuide()">×</button>
+    <h3>Инструкция по установке</h3>
+
+    <h4>📱 iPhone / iPad</h4>
+    <p>1. Скачай <b>Hiddify</b> из App Store (бесплатно)</p>
+    <p>2. Открой приложение → «Добавить профиль»</p>
+    <p>3. Вставь ключ <code>vless://...</code> из бота</p>
+    <p>4. Нажми «Подключиться» — готово ✓</p>
+
+    <h4>🤖 Android</h4>
+    <p>1. Установи <b>Hiddify</b> из Google Play</p>
+    <p>2. «+» → «Вставить из буфера обмена»</p>
+    <p>3. Вставь ключ из бота → «Подключиться»</p>
+    <p>4. Разреши VPN-подключение при запросе</p>
+
+    <h4>🍎 Mac</h4>
+    <p>1. Скачай <b>Hiddify</b> с GitHub (файл <code>.dmg</code>)</p>
+    <p>2. Перетащи в «Программы», запусти</p>
+    <p>3. «Добавить профиль» → вставь ключ</p>
+    <p>4. Иконка в меню-баре → «Подключить»</p>
+
+    <h4>🪟 Windows</h4>
+    <p>1. Скачай <b>Hiddify</b> с GitHub (файл <code>.exe</code>)</p>
+    <p>2. Установи, запусти от имени администратора</p>
+    <p>3. «Добавить конфиг» → вставь ключ</p>
+    <p>4. Нажми «Старт» — иконка в трее станет зелёной ✓</p>
+
+    <h4>🐧 Linux</h4>
+    <p>1. Скачай <code>.AppImage</code> с GitHub</p>
+    <p>2. <code>chmod +x Hiddify*.AppImage && ./Hiddify*.AppImage</code></p>
+    <p>3. Вставь ключ → подключайся</p>
+
+    <div style="margin-top:24px;padding:16px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px">
+      <p style="color:var(--blue);font-size:13px;font-weight:600;margin-bottom:6px">Не получается?</p>
+      <p>Напиши боту <code>/help</code> — разберёмся вместе и подключим.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div class="overlay" id="privM" onclick="if(event.target===this)closePriv()">
+  <div class="modal">
+    <button class="m-close" onclick="closePriv()">×</button>
+    <h3>Политика конфиденциальности</h3>
+
+    <h4>Что мы собираем</h4>
+    <p>При регистрации: Telegram ID и имя пользователя. Данные карт не хранятся — оплата через YooKassa, CryptoBot и Telegram Stars.</p>
+
+    <h4>Как используем</h4>
+    <p>Telegram ID нужен для: идентификации подписки, выдачи VPN-ключей, уведомлений о продлении. Мы не передаём данные третьим лицам и не продаём их.</p>
+
+    <h4>Логи трафика</h4>
+    <p>Мы <b>не ведём</b> логи посещённых сайтов, IP-адресов назначения или содержимого трафика. Хранится только объём потреблённого трафика (ГБ) для контроля лимита тарифа.</p>
+
+    <h4>Хранение данных</h4>
+    <p>Данные хранятся на серверах в Европе. Срок — до удаления аккаунта + 30 дней.</p>
+
+    <h4>Удаление данных</h4>
+    <p>Напиши боту <code>/support</code> с запросом на удаление — выполним за 3 рабочих дня.</p>
+
+    <div style="margin-top:24px;font-size:12px;color:var(--muted)">Обновлено: июнь 2025</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="z">
+  <div class="wrap">
+    <div class="foot-links">
+      <span class="fl-a" onclick="openPriv()">Политика конфиденциальности</span>
+      <a href="#devices" class="fl-a">Инструкция по установке</a>
+      <a href="#ref" class="fl-a">Реферальная программа</a>
+      <a href="#faq" class="fl-a">FAQ</a>
+      <a href="https://t.me/YOUR_BOT" target="_blank" class="fl-a">Поддержка</a>
+    </div>
+    <p>VPN на VLESS Reality · Работает в России · 2025</p>
+  </div>
+</footer>
+
+<script>
+// FAQ accordion
+function faq(btn){
+  const item=btn.closest('.fi'),isOpen=item.classList.contains('open');
+  document.querySelectorAll('.fi').forEach(el=>el.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+// Guide modal
+function openGuide(){document.getElementById('guideM').classList.add('on');document.body.style.overflow='hidden'}
+function closeGuide(){document.getElementById('guideM').classList.remove('on');document.body.style.overflow=''}
+
+// Privacy modal
+function openPriv(){document.getElementById('privM').classList.add('on');document.body.style.overflow='hidden'}
+function closePriv(){document.getElementById('privM').classList.remove('on');document.body.style.overflow=''}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeGuide();closePriv()}});
+
+// Scroll animations
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}
+  });
+},{threshold:.08});
+
+document.querySelectorAll('.plan-card,.why-card,.dev-card,.ref-step,.fl-step,.fi,.hb').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(22px)';
+  el.style.transition='opacity .55s ease, transform .55s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
