@@ -15,8 +15,10 @@ STARS_ENABLED = os.getenv("STARS_ENABLED", "false").lower() == "true"
 CHANNEL_ID    = os.getenv("CHANNEL_ID",    "")   # ID канала для авто-постов продаж
 
 TRIAL_DAYS = 3
-REF_BONUS  = 7
+REF_BONUS  = 14   # 2 недели за приглашённого друга
 RATE_LIMIT = 600
+
+SITE_URL = os.getenv("SITE_URL", "https://irekgai111-lang.github.io/vpn-sell/")
 
 PLANS = {
     "trial": {"name": "🎁 3 дня бесплатно", "rub": 0,    "usdt": 0,     "stars": 0,    "days": 3,   "gb": 5},

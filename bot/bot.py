@@ -17,7 +17,7 @@ from telegram.ext import (
 import db, marzban, payments, scheduler
 from config import (
     BOT_TOKEN, BOT_USERNAME, ADMIN_IDS, PLANS, OLD_PRICES,
-    RATE_LIMIT, REF_BONUS, TRIAL_DAYS, STARS_ENABLED, CHANNEL_ID,
+    RATE_LIMIT, REF_BONUS, TRIAL_DAYS, STARS_ENABLED, CHANNEL_ID, SITE_URL,
 )
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
@@ -43,8 +43,9 @@ def main_kb(tg_id: int) -> IKM:
         rows.append([IKB("💳 Купить VPN", callback_data="buy")])
     rows += [
         [IKB("📊 Моя подписка", callback_data="mysub")],
-        [IKB("👥 Пригласить друга  (+7 дней)", callback_data="ref")],
+        [IKB("👥 Пригласить друга (+14 дней)", callback_data="ref")],
         [IKB("📱 Как подключить", callback_data="howto")],
+        [IKB("🌐 Наш сайт", url=SITE_URL)],
         [IKB("💬 Поддержка", callback_data="support")],
     ]
     return IKM(rows)
@@ -466,13 +467,18 @@ async def cb_ref(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     link  = ref_link(tg_id)
     await query.edit_message_text(
         f"👥 <b>Реферальная программа</b>\n\n"
-        f"Приглашай друзей — получай <b>+{REF_BONUS} дней</b> бесплатно за каждого!\n\n"
+        f"🎁 Приглашай друзей — получай <b>+{REF_BONUS} дней</b> за каждого!\n\n"
         f"Твоя ссылка:\n<code>{link}</code>\n\n"
         f"Приглашено: <b>{count}</b> чел.\n"
-        f"Заработано дней: <b>{count * REF_BONUS}</b> дн.\n\n"
-        f"Бонус начисляется когда друг оплачивает первую подписку.",
+        f"Заработано бонусов: <b>{count * REF_BONUS}</b> дн.\n\n"
+        f"✅ Бонус начисляется автоматически после первой оплаты друга\n"
+        f"✅ Без ограничений по количеству приглашений\n"
+        f"✅ Дни накапливаются",
         parse_mode="HTML",
-        reply_markup=IKM([[IKB("⬅️ Назад", callback_data="back")]])
+        reply_markup=IKM([
+            [IKB("📤 Поделиться ссылкой", url=f"https://t.me/share/url?url={link}&text=Попробуй+VPN+без+блокировок+🔐")],
+            [IKB("⬅️ Назад", callback_data="back")],
+        ])
     )
 
 
@@ -483,17 +489,21 @@ async def cb_howto(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     await query.edit_message_text(
         "📱 <b>Как подключить VPN</b>\n\n"
-        "<b>Шаг 1 — Скачай Hiddify</b>\n"
-        "• iPhone / Mac → App Store: <b>Hiddify</b>\n"
+        "<b>Шаг 1 — Скачай Hiddify (бесплатно)</b>\n"
+        "• iPhone / iPad → App Store: <b>Hiddify</b>\n"
         "• Android → Google Play: <b>Hiddify</b>\n"
-        "• Windows → hiddify.com → Download\n\n"
+        "• Mac / Windows / Linux → hiddify.com\n\n"
         "<b>Шаг 2 — Добавь ключ</b>\n"
-        "Открой Hiddify → нажми <b>+</b> → «Добавить по ссылке» → вставь свой ключ из раздела «Моя подписка»\n\n"
+        "Открой Hiddify → нажми <b>+</b> → «Добавить по ссылке» → вставь ключ из «Моя подписка»\n\n"
         "<b>Шаг 3 — Включи VPN</b>\n"
-        "Переключи тумблер → готово!\n\n"
-        "🟢 <b>VLESS Reality</b> — работает даже там, где другие VPN заблокированы.",
+        "Переключи тумблер → готово! 🟢\n\n"
+        "🔒 <b>VLESS Reality</b> — маскируется под Microsoft, не блокируется в России.\n\n"
+        f"📖 Подробная инструкция со скриншотами:\n{SITE_URL}",
         parse_mode="HTML",
-        reply_markup=IKM([[IKB("⬅️ Назад", callback_data="back")]])
+        reply_markup=IKM([
+            [IKB("🌐 Открыть инструкцию", url=SITE_URL)],
+            [IKB("⬅️ Назад", callback_data="back")],
+        ])
     )
 
 
@@ -562,6 +572,17 @@ async def handle_promo_text(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 # ─── Команды администратора ───────────────────────────────────────────────────
+
+async def cmd_website(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Команда /website — ссылка на сайт сервиса."""
+    await update.message.reply_text(
+        f"🌐 <b>Сайт VPN-сервиса</b>\n\n"
+        f"{SITE_URL}\n\n"
+        f"На сайте: тарифы, инструкция по установке на всех устройствах, реферальная программа.",
+        parse_mode="HTML",
+        reply_markup=IKM([[IKB("🌐 Открыть сайт", url=SITE_URL)]])
+    )
+
 
 async def cmd_stat(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not is_admin(update.effective_user.id):
@@ -686,6 +707,7 @@ def main():
 
     # Команды
     app.add_handler(CommandHandler("start",     cmd_start))
+    app.add_handler(CommandHandler("website",   cmd_website))
     app.add_handler(CommandHandler("stat",      cmd_stat))
     app.add_handler(CommandHandler("adddays",   cmd_adddays))
     app.add_handler(CommandHandler("broadcast", cmd_broadcast))
