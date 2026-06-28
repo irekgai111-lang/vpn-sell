@@ -247,6 +247,34 @@ INFO
 chmod 600 /root/vpn-business-info.txt
 
 # ────────────────────────────────────────────
+hdr "Обновляем сайт под ваш бот"
+# ────────────────────────────────────────────
+SITE_URL="https://irekgai111-lang.github.io/vpn-sell/"
+# Если есть домен — сайт будет там, иначе GitHub Pages
+if [ -n "$DOMAIN" ]; then
+    CLIENT_SITE_URL="https://${DOMAIN}/"
+else
+    CLIENT_SITE_URL="${SITE_URL}"
+fi
+
+# Подставляем имя бота и URL в client.html
+if [ -f "${BOT_DIR}/client.html" ]; then
+    sed -i "s|YOUR_BOT|${BOT_USERNAME}|g" "${BOT_DIR}/client.html"
+    sed -i "s|https://irekgai111-lang.github.io/vpn-sell/|${CLIENT_SITE_URL}|g" "${BOT_DIR}/client.html"
+    ok "client.html обновлён: бот @${BOT_USERNAME}, сайт ${CLIENT_SITE_URL}"
+fi
+
+# Прописываем URL сайта в .env для бота
+echo "SITE_URL=${CLIENT_SITE_URL}" >> "${BOT_DIR}/.env"
+ok "SITE_URL добавлен в .env"
+
+# Если Nginx настроен — копируем client.html в веб-корень
+if [ -n "$DOMAIN" ] && [ -d "/var/www/html" ]; then
+    cp "${BOT_DIR}/client.html" /var/www/html/index.html
+    ok "client.html опубликован → https://${DOMAIN}/"
+fi
+
+# ────────────────────────────────────────────
 # ФИНАЛ
 # ────────────────────────────────────────────
 clear
@@ -271,7 +299,10 @@ echo "   systemctl restart vpn-bot"
 echo ""
 echo "3. Проверь бота: t.me/${BOT_USERNAME}"
 echo ""
-echo "4. Все данные сохранены в: /root/vpn-business-info.txt"
+echo "4. Сайт для клиентов: ${CLIENT_SITE_URL}"
+echo "   (тарифы, инструкции, рефералка — уже настроено)"
+echo ""
+echo "5. Все данные сохранены в: /root/vpn-business-info.txt"
 echo ""
 echo -e "${G}Запусти клиентов — деньги идут автоматически!${N}"
 echo ""
